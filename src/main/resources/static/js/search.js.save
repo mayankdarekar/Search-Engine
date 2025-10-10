@@ -1,4 +1,7 @@
-const API = '/api';
+cd ~/Documents/GitHub/"Search Engine"
+sed -i '' "s|const API = 'http://localhost:8080/api';|const API = '/api';|" ./src/main/resources/static/js/search.js
+
+const API = 'http://localhost:8080/api';
 
 const searchInput = document.getElementById('searchInput');
 const searchInputMini = document.getElementById('searchInputMini');
