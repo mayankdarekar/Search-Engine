@@ -1,1 +1,0 @@
-Version control systems track changes to code over time. Git is the most popular distributed version control system. Key concepts include commits, branches, merges, pull requests, and conflict resolution. Platforms like GitHub, GitLab, and Bitbucket provide hosting and collaboration features.

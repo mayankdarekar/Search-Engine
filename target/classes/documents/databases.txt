@@ -1,1 +1,0 @@
-Databases are organized collections of structured information or data. SQL databases like MySQL and PostgreSQL use structured query language for defining and manipulating data. NoSQL databases like MongoDB and Cassandra offer flexible schemas for unstructured data. Key concepts include ACID properties, normalization, indexing, and transactions.

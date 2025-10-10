@@ -1,1 +1,0 @@
-DevOps combines software development and IT operations to shorten development cycles. Key practices include continuous integration, continuous delivery, infrastructure as code, and automated testing. Popular tools include Jenkins, Docker, Kubernetes, Git, and Terraform. Focus areas are automation, monitoring, and collaboration.

@@ -1,1 +1,0 @@
-Mobile development creates applications for smartphones and tablets. Native development uses platform-specific languages like Swift for iOS and Kotlin for Android. Cross-platform frameworks like React Native and Flutter allow code sharing across platforms. Key considerations include UI/UX design, performance optimization, and app store deployment.

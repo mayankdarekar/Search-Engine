@@ -1,1 +1,0 @@
-Frontend frameworks streamline web development with reusable components and efficient rendering. React is component-based with virtual DOM. Angular is a full-featured framework with TypeScript. Vue.js offers progressive adoption and simplicity. Modern features include state management, routing, and server-side rendering.

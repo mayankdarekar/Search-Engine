@@ -1,1 +1,0 @@
-API development creates interfaces for software applications to communicate. REST APIs use HTTP methods for CRUD operations. GraphQL provides flexible data queries. Key concepts include endpoints, authentication, rate limiting, and documentation. Tools include Postman, Swagger, and API gateways.
