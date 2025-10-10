@@ -1,0 +1,1 @@
+Cloud computing delivers computing services over the internet including servers, storage, databases, networking, and software. Major providers include AWS, Microsoft Azure, and Google Cloud Platform. Key service models are IaaS, PaaS, and SaaS. Benefits include scalability, cost efficiency, and global accessibility.

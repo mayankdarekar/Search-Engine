@@ -1,0 +1,1 @@
+Cybersecurity protects computer systems, networks, and data from digital attacks. Key areas include network security, application security, information security, and operational security. Common threats include malware, phishing, ransomware, and DDoS attacks. Best practices include encryption, multi-factor authentication, and regular security audits.

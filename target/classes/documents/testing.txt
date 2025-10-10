@@ -1,0 +1,1 @@
+Software testing ensures code quality and functionality. Unit tests verify individual components. Integration tests check how modules work together. End-to-end tests simulate user workflows. Test-driven development writes tests before code. Popular frameworks include JUnit, pytest, Jest, and Selenium.
