@@ -3,84 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Search Engine</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <title>SearchHub - Discover Knowledge</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <!-- Animated Background -->
-    <div class="background">
-        <div class="gradient-orb orb1"></div>
-        <div class="gradient-orb orb2"></div>
-        <div class="gradient-orb orb3"></div>
+    <div class="stars"></div>
+    <div class="twinkling"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-container" id="loadingContainer">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Searching the galaxy...</div>
     </div>
 
-    <div class="container">
-        <!-- Main Search Page -->
-        <div class="search-page" id="searchPage">
-            <div class="logo-section">
-                <div class="logo">
-                    <span class="logo-icon">🔍</span>
-                    <h1 class="logo-text">SearchHub</h1>
-                </div>
-                <p class="tagline">Discover the world of knowledge</p>
-            </div>
-
-            <div class="search-wrapper">
-                <div class="glass-card search-card">
-                    <div class="search-box">
-                        <span class="search-icon">🔍</span>
-                        <input type="text" id="searchInput" placeholder="Search anything..." autocomplete="off">
-                        <button class="voice-btn" title="Voice Search">🎤</button>
-                    </div>
-                </div>
-                
-                <div class="suggestions-container" id="suggestions"></div>
-                
-                <div class="quick-actions">
-                    <button class="action-btn" onclick="performSearch('java')">
-                        <span>☕</span> Java
-                    </button>
-                    <button class="action-btn" onclick="performSearch('python')">
-                        <span>🐍</span> Python
-                    </button>
-                    <button class="action-btn" onclick="performSearch('web')">
-                        <span>🌐</span> Web Dev
-                    </button>
-                    <button class="action-btn" onclick="performSearch('algorithms')">
-                        <span>🧮</span> Algorithms
-                    </button>
-                </div>
-            </div>
-
-            <div class="stats-badge glass-card" id="statsDisplay">
-                <span class="pulse-dot"></span>
-                <span id="docCount">Loading...</span>
-            </div>
+    <!-- Search Page -->
+    <div class="search-page" id="searchPage">
+        <div class="logo">🔍 SearchHub</div>
+        <div class="tagline">Discover the world of knowledge</div>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search anything...">
+            <button class="voice-btn">🎤</button>
         </div>
-
-        <!-- Results Page -->
-        <div class="results-page" id="resultsPage" style="display: none;">
-            <div class="results-header glass-card">
-                <div class="header-left">
-                    <button class="back-btn" onclick="backToSearch()">
-                        <span>←</span> Back
-                    </button>
-                    <div class="results-info">
-                        <h2 id="resultsTitle">Search Results</h2>
-                        <p id="resultsSubtitle">Found in 0.42 seconds</p>
-                    </div>
-                </div>
-                <div class="search-box-mini">
-                    <input type="text" id="searchInputMini" placeholder="Search...">
-                    <button onclick="searchFromMini()">🔍</button>
-                </div>
-            </div>
-
-            <div class="results-grid" id="resultsGrid"></div>
+        
+        <div class="quick-search">
+            <button class="quick-btn" onclick="performSearch('Java')">☕ Java</button>
+            <button class="quick-btn" onclick="performSearch('Python')">🐍 Python</button>
+            <button class="quick-btn" onclick="performSearch('Web Dev')">🌐 Web Dev</button>
+            <button class="quick-btn" onclick="performSearch('Algorithms')">🧮 Algorithms</button>
         </div>
     </div>
 
-    <script src="js/search.js"></script>
+    <!-- Results Page -->
+    <div class="results-page" id="resultsPage">
+        <div class="results-header">
+            <button class="back-btn" onclick="backToSearch()">← Back</button>
+            <div class="results-info">
+                <h2 id="resultsTitle">Results</h2>
+                <p id="resultsSubtitle">Found 0 results</p>
+            </div>
+            <div class="mini-search">
+                <input type="text" id="searchInputMini" placeholder="Search...">
+                <button onclick="searchFromMini()">🔍</button>
+            </div>
+        </div>
+        
+        <div class="results-grid" id="resultsGrid"></div>
+    </div>
+
+    <script src="/js/search.js"></script>
 </body>
 </html>

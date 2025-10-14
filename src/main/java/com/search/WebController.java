@@ -18,14 +18,18 @@ public class WebController {
         
         try {
             List<SearchResult> results = webSearchService.search(q);
+            AnswerCard answer = webSearchService.getDirectAnswer(q);
+            
             response.put("query", q);
             response.put("count", results.size());
             response.put("results", results);
+            response.put("answer", answer);
             response.put("success", true);
         } catch (Exception e) {
             response.put("query", q);
             response.put("count", 0);
             response.put("results", new ArrayList<>());
+            response.put("answer", null);
             response.put("success", false);
             response.put("error", e.getMessage());
         }
