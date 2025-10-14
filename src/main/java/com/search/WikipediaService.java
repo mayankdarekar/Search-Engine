@@ -13,43 +13,32 @@ public class WikipediaService {
     
     public AnswerCard getWikipediaInfo(String query) {
         try {
+            String searchQuery = query.trim();
             String url = String.format(
                 "https://en.wikipedia.org/api/rest_v1/page/summary/%s",
-                query.replace(" ", "_")
+                searchQuery.replace(" ", "_")
             );
             
             String response = restTemplate.getForObject(url, String.class);
             JsonNode root = objectMapper.readTree(response);
             
-            String title = root.path("title").asText();
-            String extract = root.path("extract").asText();
-            String imageUrl = root.path("thumbnail").path("source").asText();
+            String title = root.path("title").asText("");
+            String extract = root.path("extract").asText("");
             
-            if (extract.isEmpty()) {
+            if (extract.isEmpty() || extract.equals("null")) {
                 return null;
             }
             
-            // Limit extract
-            if (extract.length() > 350) {
-                extract = extract.substring(0, 350) + "...";
+            // Limit to 400 characters
+            if (extract.length() > 400) {
+                extract = extract.substring(0, 400) + "...";
             }
             
-            // ALWAYS provide an image - use Unsplash random if Wikipedia doesn't have one
-            if (imageUrl == null || imageUrl.isEmpty()) {
-                imageUrl = String.format("https://source.unsplash.com/400x300/?%s", 
-                    query.replace(" ", ","));
-            }
-            
-            return new AnswerCard(title, extract, "Wikipedia", imageUrl);
+            return new AnswerCard(title, extract, "Wikipedia", null);
             
         } catch (Exception e) {
-            // If Wikipedia fails, create a basic answer with Unsplash image
-            return new AnswerCard(
-                query,
-                "Information about " + query + " from various sources. Click the links below to learn more.",
-                "General Knowledge",
-                String.format("https://source.unsplash.com/400x300/?%s", query.replace(" ", ","))
-            );
+            System.out.println("Wikipedia API failed for: " + query + " - " + e.getMessage());
+            return null;
         }
     }
 }

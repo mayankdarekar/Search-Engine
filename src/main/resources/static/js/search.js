@@ -46,22 +46,13 @@ function showResults(results, answer, query, count, time) {
     
     let htmlContent = '';
     
-    // Show answer card with image if available
+    // Show answer card WITHOUT image
     if (answer) {
         htmlContent += `
             <div class="answer-card fade-in">
-                <div class="answer-content">
-                    <div class="answer-text-section">
-                        <div class="answer-badge">${answer.category}</div>
-                        <h3 class="answer-question">${answer.question}</h3>
-                        <p class="answer-text">${answer.answer}</p>
-                    </div>
-                    ${answer.imageUrl ? `
-                        <div class="answer-image-section">
-                            <img src="${answer.imageUrl}" alt="${answer.question}" class="answer-image">
-                        </div>
-                    ` : ''}
-                </div>
+                <div class="answer-badge">${answer.category}</div>
+                <h3 class="answer-question">${answer.question}</h3>
+                <p class="answer-text">${answer.answer}</p>
             </div>
         `;
     }
