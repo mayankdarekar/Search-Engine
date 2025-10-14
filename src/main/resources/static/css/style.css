@@ -485,3 +485,19 @@ body::after {
     .mini-search { width: 100%; }
     #searchInputMini { flex: 1; }
 }
+
+.voice-btn svg {
+    transition: transform 0.3s ease;
+}
+
+.voice-btn:hover svg {
+    transform: translateY(-3px);
+}
+
+.mini-search button svg {
+    transition: transform 0.3s ease;
+}
+
+.mini-search button:hover svg {
+    transform: scale(1.1);
+}

@@ -13,32 +13,52 @@ public class WikipediaService {
     
     public AnswerCard getWikipediaInfo(String query) {
         try {
-            String searchQuery = query.trim();
-            String url = String.format(
-                "https://en.wikipedia.org/api/rest_v1/page/summary/%s",
-                searchQuery.replace(" ", "_")
+            // Step 1: Search Wikipedia for the query
+            String searchUrl = String.format(
+                "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=%s&format=json&utf8=1",
+                query.replace(" ", "%20")
             );
             
-            String response = restTemplate.getForObject(url, String.class);
-            JsonNode root = objectMapper.readTree(response);
+            String searchResponse = restTemplate.getForObject(searchUrl, String.class);
+            JsonNode searchRoot = objectMapper.readTree(searchResponse);
+            JsonNode searchResults = searchRoot.path("query").path("search");
             
-            String title = root.path("title").asText("");
-            String extract = root.path("extract").asText("");
-            
-            if (extract.isEmpty() || extract.equals("null")) {
-                return null;
+            // Get the first search result
+            if (searchResults.isArray() && searchResults.size() > 0) {
+                String pageTitle = searchResults.get(0).path("title").asText();
+                
+                // Step 2: Get summary for that page
+                String summaryUrl = String.format(
+                    "https://en.wikipedia.org/api/rest_v1/page/summary/%s",
+                    pageTitle.replace(" ", "_")
+                );
+                
+                String summaryResponse = restTemplate.getForObject(summaryUrl, String.class);
+                JsonNode summaryRoot = objectMapper.readTree(summaryResponse);
+                
+                String title = summaryRoot.path("title").asText("");
+                String extract = summaryRoot.path("extract").asText("");
+                
+                if (!extract.isEmpty() && !extract.equals("null")) {
+                    // Limit to 400 characters
+                    if (extract.length() > 400) {
+                        extract = extract.substring(0, 400) + "...";
+                    }
+                    
+                    return new AnswerCard(title, extract, "Wikipedia", null);
+                }
             }
-            
-            // Limit to 400 characters
-            if (extract.length() > 400) {
-                extract = extract.substring(0, 400) + "...";
-            }
-            
-            return new AnswerCard(title, extract, "Wikipedia", null);
             
         } catch (Exception e) {
-            System.out.println("Wikipedia API failed for: " + query + " - " + e.getMessage());
-            return null;
+            System.out.println("Wikipedia search failed: " + e.getMessage());
         }
+        
+        // Fallback: Always return something
+        return new AnswerCard(
+            query,
+            "Discover comprehensive information about \"" + query + "\" through the curated search results below. Explore various sources to learn more about this topic.",
+            "Search Info",
+            null
+        );
     }
 }
