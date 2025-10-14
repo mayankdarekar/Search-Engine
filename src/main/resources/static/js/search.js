@@ -2,71 +2,21 @@ const API = '/api';
 
 const searchInput = document.getElementById('searchInput');
 const searchInputMini = document.getElementById('searchInputMini');
-const suggestions = document.getElementById('suggestions');
 const searchPage = document.getElementById('searchPage');
 const resultsPage = document.getElementById('resultsPage');
 const resultsGrid = document.getElementById('resultsGrid');
 const resultsTitle = document.getElementById('resultsTitle');
 const resultsSubtitle = document.getElementById('resultsSubtitle');
-const docCount = document.getElementById('docCount');
 
-let allDocuments = [];
-
-window.onload = () => {
-    loadAllDocuments();
-};
-
-searchInput.addEventListener('input', handleInput);
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && searchInput.value.trim()) {
         performSearch(searchInput.value.trim());
     }
 });
 
-function handleInput(e) {
-    const query = e.target.value.trim();
-    
-    if (query.length > 0) {
-        showSuggestions(query);
-    } else {
-        suggestions.classList.remove('show');
-    }
-}
-
-function showSuggestions(query) {
-    const filtered = allDocuments.filter(doc =>
-        doc.name.toLowerCase().includes(query.toLowerCase())
-    ).slice(0, 4);
-    
-    if (filtered.length > 0) {
-        suggestions.innerHTML = filtered.map(doc => `
-            <div class="suggestion-item" onclick="performSearch('${doc.name}')">
-                <span style="font-size: 1.5rem;">📄</span>
-                <span>${doc.name}</span>
-            </div>
-        `).join('');
-        suggestions.classList.add('show');
-    } else {
-        suggestions.classList.remove('show');
-    }
-}
-
-async function loadAllDocuments() {
-    try {
-        const response = await fetch(`${API}/documents`);
-        const data = await response.json();
-        allDocuments = data.documents;
-        docCount.textContent = `${data.total} documents indexed`;
-    } catch (error) {
-        console.error('Error:', error);
-        docCount.textContent = 'Service offline';
-    }
-}
-
 async function performSearch(query) {
     try {
         searchInput.value = query;
-        suggestions.classList.remove('show');
         
         const startTime = performance.now();
         const response = await fetch(`${API}/search?q=${encodeURIComponent(query)}`);
@@ -77,6 +27,7 @@ async function performSearch(query) {
         showResults(data.results, data.query, data.count, timeTaken);
     } catch (error) {
         console.error('Error:', error);
+        showError();
     }
 }
 
@@ -93,35 +44,43 @@ function showResults(results, query, count, time) {
             <div class="no-results">
                 <div class="no-results-icon">🔍</div>
                 <h3>No results found</h3>
-                <p>Try different keywords or check the spelling</p>
+                <p>Try different keywords</p>
             </div>
         `;
         return;
     }
     
-    resultsGrid.innerHTML = results.map(doc => `
+    resultsGrid.innerHTML = results.map(result => `
         <div class="result-card">
             <div class="result-header">
                 <div>
-                    <div class="result-title">📄 ${doc.name}</div>
+                    <a href="${result.link}" target="_blank" class="result-title">
+                        ${result.title}
+                    </a>
+                    <div class="result-url">${result.link}</div>
                 </div>
-                <span class="result-score">⭐ ${doc.score.toFixed(0)}</span>
             </div>
-            <div class="result-content">${doc.preview}</div>
-            <div class="result-actions">
-                <a href="${doc.pdfUrl}" target="_blank" class="pdf-btn">
-                    📥 Open PDF
-                </a>
-            </div>
+            <div class="result-content">${result.snippet}</div>
         </div>
     `).join('');
+}
+
+function showError() {
+    searchPage.style.display = 'none';
+    resultsPage.style.display = 'block';
+    resultsGrid.innerHTML = `
+        <div class="no-results">
+            <div class="no-results-icon">⚠️</div>
+            <h3>Something went wrong</h3>
+            <p>Please try again</p>
+        </div>
+    `;
 }
 
 function backToSearch() {
     resultsPage.style.display = 'none';
     searchPage.style.display = 'flex';
     searchInput.value = '';
-    suggestions.classList.remove('show');
 }
 
 function searchFromMini() {

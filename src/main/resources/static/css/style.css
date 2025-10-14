@@ -510,3 +510,22 @@ body {
         grid-template-columns: 1fr;
     }
 }
+.result-title {
+    color: #1a73e8;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.result-title:hover {
+    text-decoration: underline;
+}
+
+.result-url {
+    color: #5f6368;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    word-break: break-all;
+}
