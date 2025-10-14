@@ -16,8 +16,6 @@ searchInput.addEventListener('keypress', (e) => {
 
 async function performSearch(query) {
     try {
-        searchInput.value = query;
-        
         const startTime = performance.now();
         const response = await fetch(`${API}/search?q=${encodeURIComponent(query)}`);
         const data = await response.json();
@@ -39,12 +37,12 @@ function showResults(results, query, count, time) {
     resultsSubtitle.textContent = `Found ${count} results in ${time} seconds`;
     searchInputMini.value = query;
     
-    if (results.length === 0) {
+    if (!results || results.length === 0) {
         resultsGrid.innerHTML = `
             <div class="no-results">
                 <div class="no-results-icon">🔍</div>
                 <h3>No results found</h3>
-                <p>Try different keywords</p>
+                <p>Try searching for java, python, web, or algorithms</p>
             </div>
         `;
         return;

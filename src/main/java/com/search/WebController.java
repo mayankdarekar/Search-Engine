@@ -1,5 +1,6 @@
 package com.search;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
@@ -8,24 +9,27 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class WebController {
     
-    private final SearchEngine searchEngine = new SearchEngine();
+    @Autowired
+    private WebSearchService webSearchService;
     
     @GetMapping("/search")
-    public Map<String, Object> search(@RequestParam("q") String query) {
-        List<Document> results = searchEngine.search(query);
+    public Map<String, Object> search(@RequestParam String q) {
         Map<String, Object> response = new HashMap<>();
-        response.put("query", query);
-        response.put("results", results);
-        response.put("count", results.size());
-        return response;
-    }
-    
-    @GetMapping("/documents")
-    public Map<String, Object> getAllDocuments() {
-        List<Document> docs = searchEngine.getAllDocuments();
-        Map<String, Object> response = new HashMap<>();
-        response.put("documents", docs);
-        response.put("total", docs.size());
+        
+        try {
+            List<SearchResult> results = webSearchService.search(q);
+            response.put("query", q);
+            response.put("count", results.size());
+            response.put("results", results);
+            response.put("success", true);
+        } catch (Exception e) {
+            response.put("query", q);
+            response.put("count", 0);
+            response.put("results", new ArrayList<>());
+            response.put("success", false);
+            response.put("error", e.getMessage());
+        }
+        
         return response;
     }
 }
