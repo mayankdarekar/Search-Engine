@@ -55,7 +55,7 @@ public class WikipediaService {
         
         // Fallback: Always return something
         return new AnswerCard(
-            query,
+            query, 
             "Discover comprehensive information about \"" + query + "\" through the curated search results below. Explore various sources to learn more about this topic.",
             "Search Info",
             null
