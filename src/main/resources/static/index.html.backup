@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SearchHub - Discover the Universe</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="stars"></div>
+    <div class="twinkling"></div>
+    
+    <div class="search-page" id="searchPage">
+        <h1 class="logo">SearchHub</h1>
+        <p class="tagline">Discover the Universe of Information</p>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search anything...">
+            <button class="voice-btn" onclick="document.getElementById('searchInput').dispatchEvent(new KeyboardEvent('keypress', {key: 'Enter'}))">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L13 8L15 6L13.5 12L16 10L14 16L12 22L10 16L8 10L10.5 12L9 6L11 8L12 2Z" fill="#4a90e2"/>
+                    <path d="M9 18L10 20H14L15 18H9Z" fill="#e74c3c"/>
+                    <circle cx="12" cy="20" r="1.5" fill="#ffa500" opacity="0.8"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="quick-search">
+            <button class="quick-btn" onclick="document.getElementById('searchInput').value='Technology'; document.getElementById('searchInput').dispatchEvent(new KeyboardEvent('keypress', {key: 'Enter'}))">Technology</button>
+            <button class="quick-btn" onclick="document.getElementById('searchInput').value='Science'; document.getElementById('searchInput').dispatchEvent(new KeyboardEvent('keypress', {key: 'Enter'}))">Science</button>
+            <button class="quick-btn" onclick="document.getElementById('searchInput').value='Space'; document.getElementById('searchInput').dispatchEvent(new KeyboardEvent('keypress', {key: 'Enter'}))">Space</button>
+        </div>
+    </div>
+    
+    <div class="results-page" id="resultsPage">
+        <div class="results-header">
+            <button class="back-btn" onclick="backToSearch()">⬅ Back</button>
+            <div class="results-info">
+                <h2 id="resultsTitle"></h2>
+                <p id="resultsSubtitle"></p>
+            </div>
+            <div class="mini-search">
+                <input type="text" id="searchInputMini" placeholder="Search...">
+                <button onclick="searchFromMini()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L13 8L15 6L13.5 12L16 10L14 16L12 22L10 16L8 10L10.5 12L9 6L11 8L12 2Z" fill="#4a90e2"/>
+                        <path d="M9 18L10 20H14L15 18H9Z" fill="#e74c3c"/>
+                        <circle cx="12" cy="20" r="1.5" fill="#ffa500" opacity="0.8"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="results-grid" id="resultsGrid"></div>
+    </div>
+    
+    <div class="loading-container" id="loadingContainer">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Searching the universe...</div>
+    </div>
+    
+    <script src="/js/search.js"></script>
+</body>
+</html>
