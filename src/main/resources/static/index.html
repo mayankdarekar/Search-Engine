@@ -1,64 +1,242 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SearchHub - Discover the Universe</title>
-    <link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SearchHub - Discover the Universe</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: #fff; min-height: 100vh; overflow-x: hidden; }
+    #starCanvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    .page { position: relative; z-index: 1; min-height: 100vh; }
+    #homePage { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
+    #resultsPage { display: none; }
+    .deco { position: fixed; pointer-events: none; z-index: 0; }
+    .planet-red { width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #ff7070 0%, #c0182a 50%, #6a0010 100%); box-shadow: 0 0 70px rgba(200,20,40,0.5); bottom: -45px; left: -50px; animation: floatPlanetRed 8s ease-in-out infinite; }
+    @keyframes floatPlanetRed { 0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-22px) scale(1.03);} }
+    .planet-brown { width: 115px; height: 115px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #d49a50 0%, #9a5a1a 55%, #5a2e00 100%); box-shadow: 0 0 40px rgba(160,90,20,0.4); top: 28px; right: 28px; animation: floatPlanetBrown 10s ease-in-out infinite; }
+    @keyframes floatPlanetBrown { 0%,100%{transform:translateY(0) rotate(0deg);}33%{transform:translateY(-14px) rotate(4deg);}66%{transform:translateY(-8px) rotate(-3deg);} }
+    .ufo { width: 90px; height: 22px; border-radius: 50%; background: radial-gradient(ellipse, #40d8ff 0%, #0090cc 60%, #004466 100%); box-shadow: 0 0 24px rgba(60,200,255,0.7),0 0 6px rgba(60,200,255,1); right: 130px; top: 54%; animation: floatUfo 5s ease-in-out infinite; }
+    @keyframes floatUfo { 0%,100%{transform:translateY(0) translateX(0);box-shadow:0 0 24px rgba(60,200,255,0.7),0 0 6px rgba(60,200,255,1);}25%{transform:translateY(-18px) translateX(10px);box-shadow:0 0 40px rgba(60,200,255,1),0 0 14px rgba(60,200,255,1);}75%{transform:translateY(-8px) translateX(-12px);box-shadow:0 0 30px rgba(60,200,255,0.9),0 0 10px rgba(60,200,255,1);} }
+    .rocket { width:0;height:0;border-left:28px solid transparent;border-right:28px solid transparent;border-bottom:58px solid #e83030;filter:drop-shadow(0 0 14px rgba(232,48,48,0.8));left:110px;top:33%;animation:floatRocket 7s ease-in-out infinite; }
+    @keyframes floatRocket { 0%,100%{transform:rotate(-30deg) translateY(0);filter:drop-shadow(0 0 14px rgba(232,48,48,0.8));}50%{transform:rotate(-28deg) translateY(-28px);filter:drop-shadow(0 0 24px rgba(232,48,48,1));} }
+    .shooting-star { width:130px;height:3px;background:linear-gradient(90deg,transparent,#d4b040 30%,#ffe080 50%,#d4b040 70%,transparent);border-radius:2px;left:140px;top:47%;animation:shootingStarMove 4s ease-in-out infinite; }
+    @keyframes shootingStarMove { 0%,100%{transform:rotate(-10deg) translateX(0);opacity:0.9;box-shadow:0 0 8px rgba(212,176,64,0.8);}40%{transform:rotate(-10deg) translateX(40px);opacity:1;box-shadow:0 0 20px rgba(212,176,64,1),0 0 6px #fff;}60%{transform:rotate(-10deg) translateX(-20px);opacity:0.5;} }
+    .rocket-sm { width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:32px solid #cc2020;filter:drop-shadow(0 0 8px rgba(200,30,30,0.7));right:55px;bottom:90px;animation:floatRocketSm 6s ease-in-out infinite; }
+    @keyframes floatRocketSm { 0%,100%{transform:rotate(20deg) translateY(0);filter:drop-shadow(0 0 8px rgba(200,30,30,0.7));}50%{transform:rotate(22deg) translateY(-20px);filter:drop-shadow(0 0 18px rgba(200,30,30,1));} }
+    .home-content { position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;max-width:680px; }
+    .site-title { font-size:clamp(52px,9vw,88px);font-weight:900;letter-spacing:-0.025em;text-align:center;color:#fff;text-shadow:0 0 25px rgba(160,100,255,0.95),0 0 55px rgba(140,80,240,0.65),0 0 100px rgba(120,60,220,0.35);animation:titleGlow 4s ease-in-out infinite alternate; }
+    @keyframes titleGlow { from{text-shadow:0 0 25px rgba(160,100,255,0.95),0 0 55px rgba(140,80,240,0.65),0 0 100px rgba(120,60,220,0.35);}to{text-shadow:0 0 40px rgba(190,140,255,1.0),0 0 80px rgba(160,100,255,0.8),0 0 140px rgba(140,80,240,0.5);} }
+    .site-subtitle { font-size:17px;font-weight:400;color:rgba(215,210,255,0.78);text-align:center;margin-top:-4px; }
+    .home-search-wrap { width:100%;max-width:520px;margin-top:10px; }
+    .home-search-bar { display:flex;align-items:center;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.16);border-radius:50px;padding:0 10px 0 24px;backdrop-filter:blur(16px);transition:border-color .25s,box-shadow .25s; }
+    .home-search-bar:focus-within { border-color:rgba(160,110,255,0.65);box-shadow:0 0 30px rgba(140,90,255,0.25); }
+    .home-search-bar input { flex:1;background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:15px;color:#fff;padding:16px 0;caret-color:#a070ff; }
+    .home-search-bar input::placeholder { color:rgba(200,200,230,0.45); }
+    .mic-btn { width:36px;height:36px;border-radius:50%;border:none;background:linear-gradient(135deg,#5090ff,#3060dd);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;box-shadow:0 2px 14px rgba(80,140,255,0.45); }
+    .mic-btn:hover { transform:scale(1.1); }
+    .mic-btn.listening { background:linear-gradient(135deg,#ff5080,#cc2050);animation:micPulse 1s ease infinite; }
+    @keyframes micPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,80,128,0.5);}50%{box-shadow:0 0 0 10px rgba(255,80,128,0);} }
+    .mic-btn svg { width:16px;height:16px; }
+    .category-chips { display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px; }
+    .chip { padding:9px 22px;border-radius:50px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.06);color:rgba(230,225,255,0.85);font-family:'Inter',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px); }
+    .chip:hover { border-color:rgba(160,110,255,0.65);background:rgba(140,90,255,0.16);color:#fff; }
+    .results-header { position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:22px 40px;gap:16px;flex-wrap:wrap; }
+    .back-btn { display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:50px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.07);color:rgba(220,215,255,0.85);font-family:'Inter',sans-serif;font-size:14px;font-weight:500;cursor:pointer;backdrop-filter:blur(8px);transition:all .2s; }
+    .back-btn:hover { border-color:rgba(160,110,255,0.5);color:#fff; }
+    .results-title-block { text-align:center;flex:1; }
+    .results-title-block h2 { font-size:22px;font-weight:800; }
+    .results-title-block p { font-size:13px;color:rgba(200,200,230,0.6);margin-top:4px; }
+    .results-search-bar { display:flex;align-items:center;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:50px;padding:0 10px 0 18px;backdrop-filter:blur(12px);min-width:190px; }
+    .results-search-bar input { background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:14px;color:#fff;padding:10px 8px;width:150px;caret-color:#a070ff; }
+    .results-search-bar input::placeholder { color:rgba(200,200,230,0.4); }
+    .source-tabs { position:relative;z-index:2;display:flex;gap:8px;padding:0 40px 18px;flex-wrap:wrap; }
+    .source-tab { padding:6px 14px;border-radius:50px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.05);color:rgba(210,210,240,0.65);font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s; }
+    .source-tab:hover,.source-tab.active { border-color:rgba(160,110,255,0.55);background:rgba(130,80,255,0.16);color:#fff; }
+    .results-body { position:relative;z-index:2;max-width:800px;margin:0 auto;padding:0 24px 80px; }
+    .instant-box { background:linear-gradient(135deg,rgba(100,60,200,0.18),rgba(60,30,120,0.12));border:1px solid rgba(160,110,255,0.35);border-radius:16px;padding:22px 26px;margin-bottom:16px;backdrop-filter:blur(12px);animation:cardIn .3s ease forwards; }
+    .instant-label { display:inline-block;font-size:10px;font-weight:700;letter-spacing:.12em;color:#a080ff;border:1px solid rgba(160,110,255,0.4);border-radius:4px;padding:3px 8px;margin-bottom:12px; }
+    .instant-box h3 { font-size:20px;font-weight:800;color:#fff;margin-bottom:8px; }
+    .instant-box p { font-size:14px;color:rgba(215,210,245,0.82);line-height:1.7; }
+    .instant-source { display:block;margin-top:10px;font-size:12px;color:rgba(130,200,130,0.8);text-decoration:none; }
+    .result-card { background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:16px 20px;margin-bottom:10px;backdrop-filter:blur(12px);cursor:pointer;transition:all .2s;opacity:0;transform:translateY(10px);animation:cardIn .4s ease forwards; }
+    @keyframes cardIn { to{opacity:1;transform:translateY(0);} }
+    .result-card:hover { background:rgba(140,90,255,0.1);border-color:rgba(160,110,255,0.35);transform:translateY(-2px); }
+    .result-meta-row { display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-wrap:wrap; }
+    .result-favicon { width:16px;height:16px;border-radius:3px;flex-shrink:0; }
+    .result-domain { font-size:12px;color:rgba(180,175,220,0.55); }
+    .badge { font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600;letter-spacing:.04em;flex-shrink:0; }
+    .badge-wiki{background:rgba(60,140,60,0.2);color:#70c870;border:1px solid rgba(60,140,60,0.3);}
+    .badge-ddg{background:rgba(255,110,60,0.18);color:#ff9060;border:1px solid rgba(255,110,60,0.3);}
+    .badge-github{background:rgba(200,200,200,0.1);color:#c0c0d0;border:1px solid rgba(200,200,200,0.2);}
+    .badge-stackoverflow{background:rgba(244,128,36,0.18);color:#f48024;border:1px solid rgba(244,128,36,0.3);}
+    .badge-hackernews{background:rgba(255,102,0,0.18);color:#ff8840;border:1px solid rgba(255,102,0,0.3);}
+    .badge-reddit{background:rgba(255,69,0,0.18);color:#ff6633;border:1px solid rgba(255,69,0,0.3);}
+    .badge-books{background:rgba(220,160,60,0.18);color:#ffcc60;border:1px solid rgba(220,160,60,0.3);}
+    .badge-news{background:rgba(80,150,255,0.18);color:#80aaff;border:1px solid rgba(80,150,255,0.3);}
+    .result-card a { display:block;font-size:16px;font-weight:700;color:#a080ff;text-decoration:none;margin-bottom:4px;line-height:1.35;transition:color .15s; }
+    .result-card:hover a { color:#c0a0ff;text-decoration:underline; }
+    .result-url { font-size:11px;color:rgba(110,190,110,0.75);margin-bottom:7px;word-break:break-all; }
+    .result-snippet { font-size:13px;color:rgba(210,210,240,0.72);line-height:1.65; }
+    .result-snippet mark { background:transparent;color:#c0a0ff;font-weight:600; }
+    .search-on-row { display:flex;align-items:center;gap:10px;padding:18px 0 4px;flex-wrap:wrap; }
+    .search-on-label { font-size:12px;color:rgba(180,175,220,0.5);white-space:nowrap; }
+    .ext-btn { display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:50px;font-size:12px;font-weight:600;text-decoration:none;transition:all .2s; }
+    .ext-google{background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.3);color:#80aaff;}
+    .ext-bing{background:rgba(0,188,212,0.1);border:1px solid rgba(0,188,212,0.28);color:#60d0e8;}
+    .ext-ddg{background:rgba(222,88,55,0.1);border:1px solid rgba(222,88,55,0.28);color:#ff9060;}
+    .ext-google:hover,.ext-bing:hover,.ext-ddg:hover{color:#fff;filter:brightness(1.2);}
+    .shimmer { height:95px;border-radius:14px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.07);background-image:linear-gradient(90deg,rgba(255,255,255,0.03) 0%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.03) 100%);background-size:400% 100%;animation:shimmerSlide 1.4s ease infinite; }
+    @keyframes shimmerSlide{0%{background-position:100% 0;}100%{background-position:-100% 0;}}
+    .loading-label { text-align:center;padding:8px 0 18px;font-size:13px;color:rgba(180,170,240,0.55);animation:loadPulse 1.4s ease infinite; }
+    @keyframes loadPulse{0%,100%{opacity:.5;}50%{opacity:1;}}
+    .no-results { text-align:center;padding:60px 0;display:none; }
+    .no-results h3 { font-size:18px;color:rgba(200,200,230,0.7);margin-bottom:8px; }
+    .no-results p { font-size:14px;color:rgba(180,180,220,0.5); }
+    .pagination { display:flex;justify-content:center;gap:8px;padding-top:28px; }
+    .page-btn { width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(220,220,255,0.8);font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center; }
+    .page-btn:hover{border-color:rgba(160,110,255,0.55);color:#fff;}
+    .page-btn.active{background:linear-gradient(135deg,#7040e0,#9060ff);border-color:transparent;color:#fff;}
+    .toast { position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(16,14,36,0.95);border:1px solid rgba(160,110,255,0.45);border-radius:50px;padding:10px 24px;font-size:13px;color:rgba(230,225,255,0.92);backdrop-filter:blur(20px);z-index:999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap; }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    @media(max-width:640px){.results-header{padding:14px 16px;}.results-title-block h2{font-size:16px;}.results-search-bar,.deco.rocket,.deco.shooting-star,.deco.ufo{display:none;}.source-tabs{padding:0 14px 12px;}.results-body{padding:0 14px 50px;}}
+  </style>
 </head>
 <body>
-    <div class="stars"></div>
-    <div class="twinkling"></div>
-    
-    <div class="search-page" id="searchPage">
-        <h1 class="logo">SearchHub</h1>
-        <p class="tagline">Discover the Universe of Information</p>
-        
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search anything...">
-            <button class="voice-btn" onclick="document.getElementById('searchInput').dispatchEvent(new KeyboardEvent('keypress', {key: 'Enter'}))">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L13 8L15 6L13.5 12L16 10L14 16L12 22L10 16L8 10L10.5 12L9 6L11 8L12 2Z" fill="#4a90e2"/>
-                    <path d="M9 18L10 20H14L15 18H9Z" fill="#e74c3c"/>
-                    <circle cx="12" cy="20" r="1.5" fill="#ffa500" opacity="0.8"/>
-                </svg>
-            </button>
-        </div>
-        
-        <div class="quick-search">
-            <button class="quick-btn" onclick="document.getElementById('searchInput').value='Technology'; document.getElementById('searchInput').dispatchEvent(new KeyboardEvent('keypress', {key: 'Enter'}))">Technology</button>
-            <button class="quick-btn" onclick="document.getElementById('searchInput').value='Science'; document.getElementById('searchInput').dispatchEvent(new KeyboardEvent('keypress', {key: 'Enter'}))">Science</button>
-            <button class="quick-btn" onclick="document.getElementById('searchInput').value='Space'; document.getElementById('searchInput').dispatchEvent(new KeyboardEvent('keypress', {key: 'Enter'}))">Space</button>
-        </div>
+<canvas id="starCanvas"></canvas>
+<div class="deco planet-red"></div>
+<div class="deco planet-brown"></div>
+<div class="deco ufo"></div>
+<div class="deco rocket"></div>
+<div class="deco shooting-star"></div>
+<div class="deco rocket-sm"></div>
+<div class="toast" id="toast"></div>
+<div class="page" id="homePage">
+  <div class="home-content">
+    <h1 class="site-title">SearchHub</h1>
+    <p class="site-subtitle">Discover the Universe of Information</p>
+    <div class="home-search-wrap">
+      <div class="home-search-bar">
+        <input type="text" id="homeInput" placeholder="Search anything..." autocomplete="off"/>
+        <button class="mic-btn" id="homeMic" title="Voice search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+      </div>
     </div>
-    
-    <div class="results-page" id="resultsPage">
-        <div class="results-header">
-            <button class="back-btn" onclick="backToSearch()">⬅ Back</button>
-            <div class="results-info">
-                <h2 id="resultsTitle"></h2>
-                <p id="resultsSubtitle"></p>
-            </div>
-            <div class="mini-search">
-                <input type="text" id="searchInputMini" placeholder="Search...">
-                <button onclick="searchFromMini()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L13 8L15 6L13.5 12L16 10L14 16L12 22L10 16L8 10L10.5 12L9 6L11 8L12 2Z" fill="#4a90e2"/>
-                        <path d="M9 18L10 20H14L15 18H9Z" fill="#e74c3c"/>
-                        <circle cx="12" cy="20" r="1.5" fill="#ffa500" opacity="0.8"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        
-        <div class="results-grid" id="resultsGrid"></div>
+    <div class="category-chips">
+      <button class="chip" data-query="Technology">Technology</button>
+      <button class="chip" data-query="Science">Science</button>
+      <button class="chip" data-query="Space">Space</button>
+      <button class="chip" data-query="Artificial Intelligence">AI</button>
+      <button class="chip" data-query="History">History</button>
     </div>
-    
-    <div class="loading-container" id="loadingContainer">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Searching the universe...</div>
+  </div>
+</div>
+<div class="page" id="resultsPage">
+  <div class="results-header">
+    <button class="back-btn" id="backBtn">← Back</button>
+    <div class="results-title-block"><h2 id="resultsHeading">Results</h2><p id="resultsMeta"></p></div>
+    <div class="results-search-bar">
+      <input type="text" id="resultsInput" placeholder="Search..." autocomplete="off"/>
+      <button class="mic-btn" id="resultsMic" title="Voice search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
     </div>
-    
-    <script src="/js/search.js"></script>
+  </div>
+  <div class="source-tabs">
+    <button class="source-tab active" data-source="all">🔍 All</button>
+    <button class="source-tab" data-source="wiki">📖 Wikipedia</button>
+    <button class="source-tab" data-source="github">🐙 GitHub</button>
+    <button class="source-tab" data-source="stackoverflow">💬 Stack Overflow</button>
+    <button class="source-tab" data-source="hackernews">🔶 Hacker News</button>
+    <button class="source-tab" data-source="reddit">🟠 Reddit</button>
+    <button class="source-tab" data-source="books">📚 Books</button>
+  </div>
+  <div class="results-body">
+    <div id="loadingState"></div>
+    <div class="no-results" id="noResults"><h3>No results found</h3><p>Try a different keyword.</p></div>
+    <div id="instantBox"></div>
+    <div id="resultsList"></div>
+    <div id="searchOnRow"></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+<script>
+(function(){const canvas=document.getElementById('starCanvas'),ctx=canvas.getContext('2d');let stars=[];function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}function init(){stars=Array.from({length:260},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,baseR:Math.random()*1.4+0.3,phase:Math.random()*Math.PI*2,speed:Math.random()*0.018+0.005,flare:Math.random()<0.12,fp:Math.random()*Math.PI*2,fs:Math.random()*0.03+0.01,color:Math.random()<.15?'rgba(180,220,255,':Math.random()<.10?'rgba(255,220,180,':'rgba(210,205,255,'}));}function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);stars.forEach(s=>{s.phase+=s.speed;s.fp+=s.fs;const tw=Math.sin(s.phase),alpha=tw*0.38+0.58;let r=s.baseR+tw*0.35;if(s.flare){const fv=Math.sin(s.fp);if(fv>0.88){r+=fv*1.3;const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,r*5);g.addColorStop(0,s.color+'0.5)');g.addColorStop(1,s.color+'0)');ctx.beginPath();ctx.arc(s.x,s.y,r*5,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();}}ctx.beginPath();ctx.arc(s.x,s.y,Math.max(0.1,r),0,Math.PI*2);ctx.fillStyle=s.color+Math.min(1,alpha)+')';ctx.fill();});requestAnimationFrame(draw);}resize();init();draw();window.addEventListener('resize',()=>{resize();init();});})();
+function showToast(msg,ms=2800){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),ms);}
+function setupVoice(btn,inp,cb){if(!('SpeechRecognition'in window||'webkitSpeechRecognition'in window)){btn.style.opacity='0.4';btn.style.pointerEvents='none';return;}const rec=new(window.SpeechRecognition||window.webkitSpeechRecognition)();rec.continuous=false;rec.interimResults=true;rec.lang='en-US';rec.onresult=e=>{const t=Array.from(e.results).map(r=>r[0].transcript).join('');inp.value=t;if(e.results[0].isFinal){rec.stop();cb(t);}};rec.onend=()=>btn.classList.remove('listening');rec.onerror=()=>{btn.classList.remove('listening');showToast('Voice error');};btn.addEventListener('click',()=>{btn.classList.contains('listening')?rec.stop():(rec.start(),btn.classList.add('listening'),showToast('Listening...'));});}
+const homePage=document.getElementById('homePage'),resultsPage=document.getElementById('resultsPage');
+function showHome(){homePage.style.display='flex';resultsPage.style.display='none';document.getElementById('homeInput').focus();window.history.pushState({},'','/');}
+function showResultsPage(){homePage.style.display='none';resultsPage.style.display='block';}
+document.getElementById('backBtn').addEventListener('click',showHome);
+const homeInput=document.getElementById('homeInput');
+homeInput.addEventListener('keydown',e=>{if(e.key==='Enter'){const q=homeInput.value.trim();if(q)performSearch(q);}});
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{homeInput.value=c.dataset.query;performSearch(c.dataset.query);}));
+setupVoice(document.getElementById('homeMic'),homeInput,q=>{if(q)performSearch(q);});
+const resultsInput=document.getElementById('resultsInput');
+resultsInput.addEventListener('keydown',e=>{if(e.key==='Enter'){const q=resultsInput.value.trim();if(q)performSearch(q);}});
+setupVoice(document.getElementById('resultsMic'),resultsInput,q=>{if(q)performSearch(q);});
+let activeSource='all';
+document.querySelectorAll('.source-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.source-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');activeSource=tab.dataset.source;const q=resultsInput.value.trim()||homeInput.value.trim();if(q)performSearch(q);});});
+const BADGE_LABELS={wiki:'Wikipedia',ddg:'DuckDuckGo',github:'GitHub',stackoverflow:'Stack Overflow',hackernews:'Hacker News',reddit:'Reddit',books:'Open Library',news:'News'};
+async function performSearch(query){
+  if(!query.trim())return;
+  showResultsPage();
+  resultsInput.value=query;
+  document.getElementById('resultsHeading').textContent='Results for "'+query+'"';
+  document.getElementById('resultsMeta').textContent='';
+  document.getElementById('resultsList').innerHTML='';
+  document.getElementById('instantBox').innerHTML='';
+  document.getElementById('searchOnRow').innerHTML='';
+  document.getElementById('pagination').innerHTML='';
+  document.getElementById('noResults').style.display='none';
+  const shimDiv=document.getElementById('loadingState');
+  shimDiv.innerHTML='<div class="loading-label">Searching Wikipedia, GitHub, Stack Overflow, Reddit and more...</div>'+[1,2,3,4,5].map(()=>'<div class="shimmer"></div>').join('');
+  const t0=performance.now();
+  try{
+    const res=await fetch('/api/search?q='+encodeURIComponent(query));
+    const elapsed=((performance.now()-t0)/1000).toFixed(2);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    shimDiv.innerHTML='';
+    let results=data.results||[];
+    if(activeSource!=='all')results=results.filter(r=>r.badge===activeSource);
+    const total=results.length;
+    document.getElementById('resultsMeta').textContent='Found '+total.toLocaleString()+' result'+(total!==1?'s':'')+' across 8 sources in '+elapsed+'s';
+    window.history.replaceState({},'','?q='+encodeURIComponent(query));
+    if(!total){document.getElementById('noResults').style.display='block';renderSearchOnRow(query);return;}
+    const instant=results.find(r=>r.badge==='ddg'&&r.snippet&&r.snippet.length>80);
+    if(instant){document.getElementById('instantBox').innerHTML='<div class="instant-box"><div class="instant-label">INSTANT ANSWER</div><h3>'+esc(instant.title)+'</h3><p>'+esc(instant.snippet)+'</p><a class="instant-source" href="'+esc(instant.url)+'" target="_blank" rel="noopener">Source: '+esc(instant.source)+' ↗</a></div>';}
+    const list=document.getElementById('resultsList');
+    const PAGE_SIZE=12;let page=1;const totalPages=Math.ceil(total/PAGE_SIZE);
+    function renderPage(p){
+      list.innerHTML='';
+      results.slice((p-1)*PAGE_SIZE,p*PAGE_SIZE).forEach((r,i)=>{
+        const card=document.createElement('div');card.className='result-card';card.style.animationDelay=(i*0.04)+'s';
+        const favicon='https://www.google.com/s2/favicons?domain='+esc(getDomain(r.url))+'&sz=32';
+        const badgeLabel=BADGE_LABELS[r.badge]||r.source||r.badge;
+        card.innerHTML='<div class="result-meta-row"><img class="result-favicon" src="'+favicon+'" alt="" onerror="this.style.display=\'none\'"><span class="result-domain">'+esc(getDomain(r.url))+'</span><span class="badge badge-'+esc(r.badge)+'">'+esc(badgeLabel)+'</span></div><a href="'+esc(r.url)+'" target="_blank" rel="noopener">'+esc(r.title)+'</a><div class="result-url">'+esc(r.url)+'</div><p class="result-snippet">'+highlight(esc(r.snippet||''),query)+'</p>';
+        card.addEventListener('click',e=>{if(!e.target.closest('a'))card.querySelector('a')?.click();});
+        list.appendChild(card);
+      });
+      const pg=document.getElementById('pagination');pg.innerHTML='';
+      if(totalPages>1){for(let i=1;i<=Math.min(totalPages,8);i++){const btn=document.createElement('button');btn.className='page-btn'+(i===p?' active':'');btn.textContent=i;btn.addEventListener('click',()=>{page=i;renderPage(i);window.scrollTo({top:0,behavior:'smooth'});});pg.appendChild(btn);}}
+    }
+    renderPage(1);renderSearchOnRow(query);
+  }catch(err){
+    document.getElementById('loadingState').innerHTML='';
+    document.getElementById('noResults').style.display='block';
+    renderSearchOnRow(query);
+    showToast('Server error - make sure Spring Boot is running',4000);
+    console.error(err);
+  }
+}
+function renderSearchOnRow(query){const q=encodeURIComponent(query);document.getElementById('searchOnRow').innerHTML='<div class="search-on-row"><span class="search-on-label">Also search on:</span><a class="ext-btn ext-google" href="https://www.google.com/search?q='+q+'" target="_blank" rel="noopener">🔍 Google</a><a class="ext-btn ext-bing" href="https://www.bing.com/search?q='+q+'" target="_blank" rel="noopener">🔷 Bing</a><a class="ext-btn ext-ddg" href="https://duckduckgo.com/?q='+q+'" target="_blank" rel="noopener">🦆 DuckDuckGo</a></div>';}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function highlight(html,query){if(!query)return html;const words=query.trim().split(/\s+/).filter(w=>w.length>2).map(w=>w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));if(!words.length)return html;return html.replace(new RegExp('('+words.join('|')+')','gi'),'<mark>$1</mark>');}
+function getDomain(url){try{return new URL(url).hostname.replace('www.','');}catch{return url||'web';}}
+(function(){const p=new URLSearchParams(window.location.search);const q=p.get('q');if(q){homeInput.value=q;performSearch(q);}})();
+</script>
 </body>
 </html>
