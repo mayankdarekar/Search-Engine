@@ -1,242 +1,605 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SearchHub - Discover the Universe</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SearchHUB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: #fff; min-height: 100vh; overflow-x: hidden; }
-    #starCanvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-    .page { position: relative; z-index: 1; min-height: 100vh; }
-    #homePage { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
-    #resultsPage { display: none; }
-    .deco { position: fixed; pointer-events: none; z-index: 0; }
-    .planet-red { width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #ff7070 0%, #c0182a 50%, #6a0010 100%); box-shadow: 0 0 70px rgba(200,20,40,0.5); bottom: -45px; left: -50px; animation: floatPlanetRed 8s ease-in-out infinite; }
-    @keyframes floatPlanetRed { 0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-22px) scale(1.03);} }
-    .planet-brown { width: 115px; height: 115px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #d49a50 0%, #9a5a1a 55%, #5a2e00 100%); box-shadow: 0 0 40px rgba(160,90,20,0.4); top: 28px; right: 28px; animation: floatPlanetBrown 10s ease-in-out infinite; }
-    @keyframes floatPlanetBrown { 0%,100%{transform:translateY(0) rotate(0deg);}33%{transform:translateY(-14px) rotate(4deg);}66%{transform:translateY(-8px) rotate(-3deg);} }
-    .ufo { width: 90px; height: 22px; border-radius: 50%; background: radial-gradient(ellipse, #40d8ff 0%, #0090cc 60%, #004466 100%); box-shadow: 0 0 24px rgba(60,200,255,0.7),0 0 6px rgba(60,200,255,1); right: 130px; top: 54%; animation: floatUfo 5s ease-in-out infinite; }
-    @keyframes floatUfo { 0%,100%{transform:translateY(0) translateX(0);box-shadow:0 0 24px rgba(60,200,255,0.7),0 0 6px rgba(60,200,255,1);}25%{transform:translateY(-18px) translateX(10px);box-shadow:0 0 40px rgba(60,200,255,1),0 0 14px rgba(60,200,255,1);}75%{transform:translateY(-8px) translateX(-12px);box-shadow:0 0 30px rgba(60,200,255,0.9),0 0 10px rgba(60,200,255,1);} }
-    .rocket { width:0;height:0;border-left:28px solid transparent;border-right:28px solid transparent;border-bottom:58px solid #e83030;filter:drop-shadow(0 0 14px rgba(232,48,48,0.8));left:110px;top:33%;animation:floatRocket 7s ease-in-out infinite; }
-    @keyframes floatRocket { 0%,100%{transform:rotate(-30deg) translateY(0);filter:drop-shadow(0 0 14px rgba(232,48,48,0.8));}50%{transform:rotate(-28deg) translateY(-28px);filter:drop-shadow(0 0 24px rgba(232,48,48,1));} }
-    .shooting-star { width:130px;height:3px;background:linear-gradient(90deg,transparent,#d4b040 30%,#ffe080 50%,#d4b040 70%,transparent);border-radius:2px;left:140px;top:47%;animation:shootingStarMove 4s ease-in-out infinite; }
-    @keyframes shootingStarMove { 0%,100%{transform:rotate(-10deg) translateX(0);opacity:0.9;box-shadow:0 0 8px rgba(212,176,64,0.8);}40%{transform:rotate(-10deg) translateX(40px);opacity:1;box-shadow:0 0 20px rgba(212,176,64,1),0 0 6px #fff;}60%{transform:rotate(-10deg) translateX(-20px);opacity:0.5;} }
-    .rocket-sm { width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:32px solid #cc2020;filter:drop-shadow(0 0 8px rgba(200,30,30,0.7));right:55px;bottom:90px;animation:floatRocketSm 6s ease-in-out infinite; }
-    @keyframes floatRocketSm { 0%,100%{transform:rotate(20deg) translateY(0);filter:drop-shadow(0 0 8px rgba(200,30,30,0.7));}50%{transform:rotate(22deg) translateY(-20px);filter:drop-shadow(0 0 18px rgba(200,30,30,1));} }
-    .home-content { position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;max-width:680px; }
-    .site-title { font-size:clamp(52px,9vw,88px);font-weight:900;letter-spacing:-0.025em;text-align:center;color:#fff;text-shadow:0 0 25px rgba(160,100,255,0.95),0 0 55px rgba(140,80,240,0.65),0 0 100px rgba(120,60,220,0.35);animation:titleGlow 4s ease-in-out infinite alternate; }
-    @keyframes titleGlow { from{text-shadow:0 0 25px rgba(160,100,255,0.95),0 0 55px rgba(140,80,240,0.65),0 0 100px rgba(120,60,220,0.35);}to{text-shadow:0 0 40px rgba(190,140,255,1.0),0 0 80px rgba(160,100,255,0.8),0 0 140px rgba(140,80,240,0.5);} }
-    .site-subtitle { font-size:17px;font-weight:400;color:rgba(215,210,255,0.78);text-align:center;margin-top:-4px; }
-    .home-search-wrap { width:100%;max-width:520px;margin-top:10px; }
-    .home-search-bar { display:flex;align-items:center;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.16);border-radius:50px;padding:0 10px 0 24px;backdrop-filter:blur(16px);transition:border-color .25s,box-shadow .25s; }
-    .home-search-bar:focus-within { border-color:rgba(160,110,255,0.65);box-shadow:0 0 30px rgba(140,90,255,0.25); }
-    .home-search-bar input { flex:1;background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:15px;color:#fff;padding:16px 0;caret-color:#a070ff; }
-    .home-search-bar input::placeholder { color:rgba(200,200,230,0.45); }
-    .mic-btn { width:36px;height:36px;border-radius:50%;border:none;background:linear-gradient(135deg,#5090ff,#3060dd);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;box-shadow:0 2px 14px rgba(80,140,255,0.45); }
-    .mic-btn:hover { transform:scale(1.1); }
-    .mic-btn.listening { background:linear-gradient(135deg,#ff5080,#cc2050);animation:micPulse 1s ease infinite; }
-    @keyframes micPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,80,128,0.5);}50%{box-shadow:0 0 0 10px rgba(255,80,128,0);} }
-    .mic-btn svg { width:16px;height:16px; }
-    .category-chips { display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px; }
-    .chip { padding:9px 22px;border-radius:50px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.06);color:rgba(230,225,255,0.85);font-family:'Inter',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px); }
-    .chip:hover { border-color:rgba(160,110,255,0.65);background:rgba(140,90,255,0.16);color:#fff; }
-    .results-header { position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:22px 40px;gap:16px;flex-wrap:wrap; }
-    .back-btn { display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:50px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.07);color:rgba(220,215,255,0.85);font-family:'Inter',sans-serif;font-size:14px;font-weight:500;cursor:pointer;backdrop-filter:blur(8px);transition:all .2s; }
-    .back-btn:hover { border-color:rgba(160,110,255,0.5);color:#fff; }
-    .results-title-block { text-align:center;flex:1; }
-    .results-title-block h2 { font-size:22px;font-weight:800; }
-    .results-title-block p { font-size:13px;color:rgba(200,200,230,0.6);margin-top:4px; }
-    .results-search-bar { display:flex;align-items:center;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:50px;padding:0 10px 0 18px;backdrop-filter:blur(12px);min-width:190px; }
-    .results-search-bar input { background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:14px;color:#fff;padding:10px 8px;width:150px;caret-color:#a070ff; }
-    .results-search-bar input::placeholder { color:rgba(200,200,230,0.4); }
-    .source-tabs { position:relative;z-index:2;display:flex;gap:8px;padding:0 40px 18px;flex-wrap:wrap; }
-    .source-tab { padding:6px 14px;border-radius:50px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.05);color:rgba(210,210,240,0.65);font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s; }
-    .source-tab:hover,.source-tab.active { border-color:rgba(160,110,255,0.55);background:rgba(130,80,255,0.16);color:#fff; }
-    .results-body { position:relative;z-index:2;max-width:800px;margin:0 auto;padding:0 24px 80px; }
-    .instant-box { background:linear-gradient(135deg,rgba(100,60,200,0.18),rgba(60,30,120,0.12));border:1px solid rgba(160,110,255,0.35);border-radius:16px;padding:22px 26px;margin-bottom:16px;backdrop-filter:blur(12px);animation:cardIn .3s ease forwards; }
-    .instant-label { display:inline-block;font-size:10px;font-weight:700;letter-spacing:.12em;color:#a080ff;border:1px solid rgba(160,110,255,0.4);border-radius:4px;padding:3px 8px;margin-bottom:12px; }
-    .instant-box h3 { font-size:20px;font-weight:800;color:#fff;margin-bottom:8px; }
-    .instant-box p { font-size:14px;color:rgba(215,210,245,0.82);line-height:1.7; }
-    .instant-source { display:block;margin-top:10px;font-size:12px;color:rgba(130,200,130,0.8);text-decoration:none; }
-    .result-card { background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:16px 20px;margin-bottom:10px;backdrop-filter:blur(12px);cursor:pointer;transition:all .2s;opacity:0;transform:translateY(10px);animation:cardIn .4s ease forwards; }
-    @keyframes cardIn { to{opacity:1;transform:translateY(0);} }
-    .result-card:hover { background:rgba(140,90,255,0.1);border-color:rgba(160,110,255,0.35);transform:translateY(-2px); }
-    .result-meta-row { display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-wrap:wrap; }
-    .result-favicon { width:16px;height:16px;border-radius:3px;flex-shrink:0; }
-    .result-domain { font-size:12px;color:rgba(180,175,220,0.55); }
-    .badge { font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600;letter-spacing:.04em;flex-shrink:0; }
-    .badge-wiki{background:rgba(60,140,60,0.2);color:#70c870;border:1px solid rgba(60,140,60,0.3);}
-    .badge-ddg{background:rgba(255,110,60,0.18);color:#ff9060;border:1px solid rgba(255,110,60,0.3);}
-    .badge-github{background:rgba(200,200,200,0.1);color:#c0c0d0;border:1px solid rgba(200,200,200,0.2);}
-    .badge-stackoverflow{background:rgba(244,128,36,0.18);color:#f48024;border:1px solid rgba(244,128,36,0.3);}
-    .badge-hackernews{background:rgba(255,102,0,0.18);color:#ff8840;border:1px solid rgba(255,102,0,0.3);}
-    .badge-reddit{background:rgba(255,69,0,0.18);color:#ff6633;border:1px solid rgba(255,69,0,0.3);}
-    .badge-books{background:rgba(220,160,60,0.18);color:#ffcc60;border:1px solid rgba(220,160,60,0.3);}
-    .badge-news{background:rgba(80,150,255,0.18);color:#80aaff;border:1px solid rgba(80,150,255,0.3);}
-    .result-card a { display:block;font-size:16px;font-weight:700;color:#a080ff;text-decoration:none;margin-bottom:4px;line-height:1.35;transition:color .15s; }
-    .result-card:hover a { color:#c0a0ff;text-decoration:underline; }
-    .result-url { font-size:11px;color:rgba(110,190,110,0.75);margin-bottom:7px;word-break:break-all; }
-    .result-snippet { font-size:13px;color:rgba(210,210,240,0.72);line-height:1.65; }
-    .result-snippet mark { background:transparent;color:#c0a0ff;font-weight:600; }
-    .search-on-row { display:flex;align-items:center;gap:10px;padding:18px 0 4px;flex-wrap:wrap; }
-    .search-on-label { font-size:12px;color:rgba(180,175,220,0.5);white-space:nowrap; }
-    .ext-btn { display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:50px;font-size:12px;font-weight:600;text-decoration:none;transition:all .2s; }
-    .ext-google{background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.3);color:#80aaff;}
-    .ext-bing{background:rgba(0,188,212,0.1);border:1px solid rgba(0,188,212,0.28);color:#60d0e8;}
-    .ext-ddg{background:rgba(222,88,55,0.1);border:1px solid rgba(222,88,55,0.28);color:#ff9060;}
-    .ext-google:hover,.ext-bing:hover,.ext-ddg:hover{color:#fff;filter:brightness(1.2);}
-    .shimmer { height:95px;border-radius:14px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.07);background-image:linear-gradient(90deg,rgba(255,255,255,0.03) 0%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.03) 100%);background-size:400% 100%;animation:shimmerSlide 1.4s ease infinite; }
-    @keyframes shimmerSlide{0%{background-position:100% 0;}100%{background-position:-100% 0;}}
-    .loading-label { text-align:center;padding:8px 0 18px;font-size:13px;color:rgba(180,170,240,0.55);animation:loadPulse 1.4s ease infinite; }
-    @keyframes loadPulse{0%,100%{opacity:.5;}50%{opacity:1;}}
-    .no-results { text-align:center;padding:60px 0;display:none; }
-    .no-results h3 { font-size:18px;color:rgba(200,200,230,0.7);margin-bottom:8px; }
-    .no-results p { font-size:14px;color:rgba(180,180,220,0.5); }
-    .pagination { display:flex;justify-content:center;gap:8px;padding-top:28px; }
-    .page-btn { width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(220,220,255,0.8);font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center; }
-    .page-btn:hover{border-color:rgba(160,110,255,0.55);color:#fff;}
-    .page-btn.active{background:linear-gradient(135deg,#7040e0,#9060ff);border-color:transparent;color:#fff;}
-    .toast { position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(16,14,36,0.95);border:1px solid rgba(160,110,255,0.45);border-radius:50px;padding:10px 24px;font-size:13px;color:rgba(230,225,255,0.92);backdrop-filter:blur(20px);z-index:999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap; }
-    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-    @media(max-width:640px){.results-header{padding:14px 16px;}.results-title-block h2{font-size:16px;}.results-search-bar,.deco.rocket,.deco.shooting-star,.deco.ufo{display:none;}.source-tabs{padding:0 14px 12px;}.results-body{padding:0 14px 50px;}}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #07080d;
+      --cyan: #00d4c8;
+      --muted: #4e5268;
+      --muted-lt: #7a8099;
+      --bar-bg: #0d0e18;
+      --bar-border: #1c1e2e;
+    }
+    html, body {
+      width: 100%; height: 100%;
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: #fff;
+      overflow: hidden;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 45% at 50% 38%, rgba(0,180,170,0.065) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 35% at 12% 72%, rgba(100,40,200,0.07) 0%, transparent 58%),
+        radial-gradient(ellipse 35% 30% at 88% 15%, rgba(60,20,160,0.09) 0%, transparent 55%),
+        radial-gradient(ellipse 28% 28% at 68% 78%, rgba(0,120,110,0.05) 0%, transparent 50%);
+    }
+    #stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    /* Space objects — all SVG, all transparent */
+    .obj { position: fixed; pointer-events: none; z-index: 1; overflow: visible; }
+    .obj svg { overflow: visible; }
+
+    /* POSITIONS — genuinely random scatter across all screen zones */
+    .o1 { top: 6vh;   left: 4vw;   width: 160px; animation: a1 7s   ease-in-out infinite; }
+    .o2 { top: 4vh;   right: 5vw;  width: 195px; animation: a2 10s  ease-in-out infinite; }
+    .o3 { top: 44vh;  left: 1vw;   width: 90px;  animation: a3 8s   ease-in-out infinite 1.2s; }
+    .o4 { top: 30vh;  right: 1vw;  width: 75px;  animation: a4 6s   ease-in-out infinite 0.5s; }
+    .o5 { bottom: 16vh; right: 5vw; width: 125px; animation: a5 9s  ease-in-out infinite 2s; }
+    .o6 { bottom: 10vh; left: 5vw;  width: 105px; animation: a6 6.5s ease-in-out infinite 0.4s; }
+    .o7 { top: 22vh;  left: 22vw;  width: 58px;  animation: a7 13s  ease-in-out infinite 3s; }
+    .o8 { bottom: 35vh; right: 25vw; width: 54px; animation: a8 3s  ease-in-out infinite; }
+    .o9 { top: 60vh;  left: 30vw;  width: 36px;  animation: a8 2.6s ease-in-out infinite 0.9s; }
+    .o10{ top: 16vh;  left: 57vw;  width: 26px;  animation: a8 4.1s ease-in-out infinite 1.5s; }
+    .o11{ bottom: 22vh; left: 46vw; width: 20px; animation: a8 3.7s ease-in-out infinite 0.3s; }
+
+    @keyframes a1 { 0%,100%{transform:translate(0,0) rotate(-4deg);}    50%{transform:translate(10px,-24px) rotate(3deg);} }
+    @keyframes a2 { 0%,100%{transform:translate(0,0) rotate(-9deg);}    50%{transform:translate(-14px,-28px) rotate(-3deg);} }
+    @keyframes a3 { 0%,100%{transform:translate(0,0) rotate(6deg);}     50%{transform:translate(12px,-18px) rotate(13deg);} }
+    @keyframes a4 { 0%,100%{transform:translate(0,0) rotate(3deg);}     50%{transform:translate(-9px,-16px) rotate(-4deg);} }
+    @keyframes a5 { 0%,100%{transform:translate(0,0) rotate(-6deg);}    50%{transform:translate(-8px,-20px) rotate(-1deg);} }
+    @keyframes a6 { 0%,100%{transform:translate(0,0) rotate(4deg);}     50%{transform:translate(9px,-16px) rotate(-2deg);} }
+    @keyframes a7 { 0%,100%{transform:translate(0,0) rotate(-22deg);}   50%{transform:translate(22px,-12px) rotate(-16deg);} }
+    @keyframes a8 { 0%,100%{opacity:0.4; transform:scale(0.82);}        50%{opacity:1; transform:scale(1.22);} }
+
+    /* Shell */
+    .shell { position: relative; z-index: 2; width: 100vw; height: 100vh; display: flex; flex-direction: column; }
+    nav { position: absolute; top: 24px; right: 38px; display: flex; gap: 30px; z-index: 10; }
+    nav a { color: var(--muted-lt); font-size: 13.5px; font-weight: 500; text-decoration: none; letter-spacing: .02em; transition: color .2s; }
+    nav a:hover { color: #fff; }
+    main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 72px; }
+    .logo { font-size: clamp(60px,7.5vw,90px); font-weight: 800; letter-spacing: -0.035em; line-height: 1; margin-bottom: 40px; user-select: none; }
+    .logo-search { color: #eef0f8; }
+    .logo-hub { color: var(--cyan); text-shadow: 0 0 50px rgba(0,212,200,0.6), 0 0 100px rgba(0,180,170,0.3), 0 0 200px rgba(0,150,145,0.12); }
+    .search-wrap { width: min(700px,90vw); margin-bottom: 18px; }
+    .search-bar {
+      display: flex; align-items: center; background: var(--bar-bg);
+      border: 1px solid var(--bar-border); border-radius: 50px;
+      padding: 5px 5px 5px 22px; gap: 10px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02) inset;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .search-bar:focus-within { border-color: rgba(0,212,200,0.32); box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 60px rgba(0,212,200,0.08); }
+    .search-icon { color: var(--muted); flex-shrink: 0; display: flex; }
+    .search-icon svg { width: 18px; height: 18px; }
+    .search-bar input { flex: 1; background: transparent; border: none; outline: none; font-family: 'Sora',sans-serif; font-size: 15px; color: var(--muted-lt); }
+    .search-bar input::placeholder { color: var(--muted); }
+    .mic-btn { background: none; border: none; cursor: pointer; color: var(--muted); display: flex; padding: 5px; transition: color .2s; }
+    .mic-btn:hover { color: #fff; }
+    .mic-btn svg { width: 19px; height: 19px; }
+    .ai-btn {
+      display: flex; align-items: center; gap: 7px; background: transparent;
+      border: 1.5px solid rgba(0,180,170,0.5); border-radius: 50px; padding: 9px 20px;
+      color: var(--cyan); font-family: 'Sora',sans-serif; font-size: 13px; font-weight: 600;
+      cursor: pointer; letter-spacing: .02em; white-space: nowrap; transition: all .25s;
+    }
+    .ai-btn:hover { background: rgba(0,212,200,0.09); border-color: var(--cyan); box-shadow: 0 0 28px rgba(0,212,200,0.18); }
+    .action-btns { display: flex; gap: 12px; }
+    .action-btn {
+      background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 50px; padding: 11px 30px; color: #b0b5cc;
+      font-family: 'Sora',sans-serif; font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: all .25s; backdrop-filter: blur(10px);
+    }
+    .action-btn:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.18); color: #fff; }
+    .bottom-strip {
+      position: absolute; bottom: 0; left: 0; right: 0; padding: 13px 30px 14px;
+      display: flex; flex-direction: column; gap: 8px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      background: rgba(7,8,13,0.9); backdrop-filter: blur(16px);
+    }
+    .explore-label { font-size: 12.5px; color: var(--muted); font-weight: 500; letter-spacing: .02em; }
+    .footer-links { display: flex; align-items: center; justify-content: space-between; }
+    .footer-left, .footer-right { display: flex; gap: 22px; }
+    .footer-links a { font-size: 12px; color: var(--muted); text-decoration: none; font-weight: 500; transition: color .2s; }
+    .footer-links a:hover { color: var(--muted-lt); }
   </style>
 </head>
 <body>
-<canvas id="starCanvas"></canvas>
-<div class="deco planet-red"></div>
-<div class="deco planet-brown"></div>
-<div class="deco ufo"></div>
-<div class="deco rocket"></div>
-<div class="deco shooting-star"></div>
-<div class="deco rocket-sm"></div>
-<div class="toast" id="toast"></div>
-<div class="page" id="homePage">
-  <div class="home-content">
-    <h1 class="site-title">SearchHub</h1>
-    <p class="site-subtitle">Discover the Universe of Information</p>
-    <div class="home-search-wrap">
-      <div class="home-search-bar">
-        <input type="text" id="homeInput" placeholder="Search anything..." autocomplete="off"/>
-        <button class="mic-btn" id="homeMic" title="Voice search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+<canvas id="stars"></canvas>
+
+<!-- ═══════════════════════════════════════════════════════
+     OBJECT 1 — TEAL SAUCER UFO (top left)
+     Classic flying saucer, glowing cyan rings, transparent bg
+════════════════════════════════════════════════════════ -->
+<div class="obj o1">
+<svg viewBox="0 0 160 110" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <radialGradient id="d1" cx="40%" cy="32%" r="65%">
+      <stop offset="0%"   stop-color="#90fff8"/>
+      <stop offset="30%"  stop-color="#00d0c4"/>
+      <stop offset="70%"  stop-color="#006860"/>
+      <stop offset="100%" stop-color="#001e1c" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="r1" cx="50%" cy="30%" r="50%">
+      <stop offset="0%"   stop-color="#005550"/>
+      <stop offset="100%" stop-color="#001a18" stop-opacity="0.6"/>
+    </radialGradient>
+    <filter id="g1" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="og1" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+  </defs>
+  <!-- outer ambient glow — no fill rectangle, just ellipse -->
+  <ellipse cx="80" cy="72" rx="70" ry="18" fill="#00c8c0" opacity="0.06" filter="url(#og1)"/>
+  <!-- ring body -->
+  <ellipse cx="80" cy="70" rx="65" ry="10" fill="url(#r1)"/>
+  <!-- top glowing rim -->
+  <ellipse cx="80" cy="67" rx="65" ry="10" fill="none" stroke="#00d4c8" stroke-width="1.8" opacity="0.95" filter="url(#g1)"/>
+  <!-- inner rings -->
+  <ellipse cx="80" cy="70" rx="44" ry="7"  fill="none" stroke="#00b8b2" stroke-width="1.1" opacity="0.55"/>
+  <ellipse cx="80" cy="70" rx="24" ry="4"  fill="none" stroke="#00ccc6" stroke-width="0.9" opacity="0.45"/>
+  <!-- dome -->
+  <ellipse cx="80" cy="52" rx="30" ry="22" fill="url(#d1)"/>
+  <!-- dome interior shading — colored, not black -->
+  <ellipse cx="80" cy="60" rx="28" ry="12" fill="#003330" opacity="0.4"/>
+  <!-- dome windows -->
+  <ellipse cx="68" cy="55" rx="5" ry="3.5" fill="#40ffe8" opacity="0.25"/>
+  <ellipse cx="80" cy="52" rx="5" ry="3.5" fill="#40ffe8" opacity="0.2"/>
+  <ellipse cx="92" cy="55" rx="5" ry="3.5" fill="#40ffe8" opacity="0.25"/>
+  <!-- dome shine -->
+  <ellipse cx="68" cy="44" rx="10" ry="6" fill="rgba(200,255,252,0.22)" transform="rotate(-18 68 44)"/>
+  <!-- antenna -->
+  <line x1="80" y1="30" x2="80" y2="38" stroke="#00c0b8" stroke-width="1.4" opacity="0.75"/>
+  <circle cx="80" cy="29" r="2.2" fill="#00ffee" opacity="0.9" filter="url(#g1)"/>
+  <!-- ring light dots -->
+  <circle cx="24"  cy="69" r="2.6" fill="#00ffee" opacity="0.95" filter="url(#g1)"/>
+  <circle cx="44"  cy="76" r="2"   fill="#00eee4" opacity="0.7"/>
+  <circle cx="64"  cy="79" r="2.4" fill="#00ffee" opacity="0.88" filter="url(#g1)"/>
+  <circle cx="80"  cy="80" r="2.8" fill="#00ffee" opacity="0.98" filter="url(#g1)"/>
+  <circle cx="96"  cy="79" r="2.4" fill="#00ffee" opacity="0.88" filter="url(#g1)"/>
+  <circle cx="116" cy="76" r="2"   fill="#00eee4" opacity="0.7"/>
+  <circle cx="136" cy="69" r="2.6" fill="#00ffee" opacity="0.95" filter="url(#g1)"/>
+  <!-- beam -->
+  <ellipse cx="80" cy="86" rx="16" ry="4" fill="#00d4c8" opacity="0.12" filter="url(#g1)"/>
+</svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     OBJECT 2 — PURPLE SATURN (top right)
+     Large ringed gas giant, deep violet, no dark rectangles
+════════════════════════════════════════════════════════ -->
+<div class="obj o2">
+<svg viewBox="0 0 195 150" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <radialGradient id="p2" cx="36%" cy="30%" r="70%">
+      <stop offset="0%"   stop-color="#d090ff"/>
+      <stop offset="22%"  stop-color="#9050e0"/>
+      <stop offset="52%"  stop-color="#5820b0"/>
+      <stop offset="78%"  stop-color="#300878"/>
+      <stop offset="100%" stop-color="#120230" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="pb2" cx="50%" cy="50%" r="50%">
+      <stop offset="60%"  stop-color="#5820b0" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#9050e0" stop-opacity="0.18"/>
+    </radialGradient>
+    <filter id="og2" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+    <filter id="g2" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="cp2"><circle cx="97" cy="74" r="46"/></clipPath>
+  </defs>
+  <!-- glow aura -->
+  <circle cx="97" cy="74" r="52" fill="#7030c0" opacity="0.07" filter="url(#og2)"/>
+  <!-- ring back half -->
+  <ellipse cx="97" cy="86" rx="90" ry="17" fill="none" stroke="#7030c0" stroke-width="9" opacity="0.4"/>
+  <ellipse cx="97" cy="86" rx="76" ry="13" fill="none" stroke="#9040e0" stroke-width="4" opacity="0.25"/>
+  <!-- planet body -->
+  <circle cx="97" cy="74" r="46" fill="url(#p2)"/>
+  <!-- atmospheric glow rim -->
+  <circle cx="97" cy="74" r="46" fill="url(#pb2)"/>
+  <!-- surface bands — clipped to planet -->
+  <g clip-path="url(#cp2)">
+    <ellipse cx="97" cy="66" rx="38" ry="5"   fill="#c080ff" opacity="0.08"/>
+    <ellipse cx="97" cy="75" rx="42" ry="4"   fill="#300878" opacity="0.18"/>
+    <ellipse cx="97" cy="83" rx="32" ry="3"   fill="#c080ff" opacity="0.07"/>
+    <ellipse cx="97" cy="90" rx="24" ry="2.5" fill="#300878" opacity="0.14"/>
+    <!-- swirl detail -->
+    <ellipse cx="78" cy="70" rx="12" ry="5" fill="#a060e8" opacity="0.1" transform="rotate(-12 78 70)"/>
+  </g>
+  <!-- ring front half -->
+  <path d="M 7 90 Q 97 112 187 90" stroke="#b060ff" stroke-width="10" fill="none" opacity="0.55" stroke-linecap="round"/>
+  <path d="M 18 94 Q 97 113 176 94" stroke="#8040c8" stroke-width="5"  fill="none" opacity="0.38" stroke-linecap="round"/>
+  <!-- ring shimmer highlights -->
+  <ellipse cx="28"  cy="91" rx="8" ry="2.5" fill="#d090ff" opacity="0.28" transform="rotate(-5 28 91)"/>
+  <ellipse cx="168" cy="91" rx="8" ry="2.5" fill="#d090ff" opacity="0.22" transform="rotate(5 168 91)"/>
+  <!-- shine -->
+  <ellipse cx="78" cy="57" rx="15" ry="9" fill="rgba(255,220,255,0.14)" transform="rotate(-22 78 57)"/>
+  <ellipse cx="82" cy="53" rx="6"  ry="3.5" fill="rgba(255,255,255,0.1)" transform="rotate(-22 82 53)"/>
+</svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     OBJECT 3 — MARS / RED ROCKY PLANET (mid left)
+     No rings. Fiery orange-red, craters, transparent bg
+════════════════════════════════════════════════════════ -->
+<div class="obj o3">
+<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <radialGradient id="p3" cx="34%" cy="28%" r="72%">
+      <stop offset="0%"   stop-color="#ff9060"/>
+      <stop offset="28%"  stop-color="#e04818"/>
+      <stop offset="62%"  stop-color="#a02010"/>
+      <stop offset="88%"  stop-color="#500808"/>
+      <stop offset="100%" stop-color="#200202" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="og3" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+    <clipPath id="cp3"><circle cx="45" cy="45" r="32"/></clipPath>
+  </defs>
+  <circle cx="45" cy="45" r="36" fill="#e04010" opacity="0.08" filter="url(#og3)"/>
+  <circle cx="45" cy="45" r="32" fill="url(#p3)"/>
+  <g clip-path="url(#cp3)">
+    <ellipse cx="40" cy="42" rx="10" ry="5.5" fill="#600a00" opacity="0.22" transform="rotate(-12 40 42)"/>
+    <ellipse cx="55" cy="52" rx="7"  ry="3.5" fill="#600a00" opacity="0.16" transform="rotate(6 55 52)"/>
+    <ellipse cx="35" cy="54" rx="5"  ry="2.8" fill="#ff7040" opacity="0.14"/>
+    <!-- craters -->
+    <circle cx="52" cy="38" r="5"   fill="#500800" opacity="0.25"/>
+    <circle cx="52" cy="38" r="3.5" fill="#400600" opacity="0.2"/>
+    <circle cx="36" cy="52" r="3.2" fill="#500800" opacity="0.2"/>
+    <circle cx="36" cy="52" r="2"   fill="#400600" opacity="0.15"/>
+    <!-- polar ice cap hint -->
+    <ellipse cx="45" cy="18" rx="6" ry="3" fill="rgba(255,240,230,0.18)" clip-path="url(#cp3)"/>
+  </g>
+  <!-- atmospheric rim -->
+  <circle cx="45" cy="45" r="32" fill="none" stroke="#ff6030" stroke-width="2.5" opacity="0.22"/>
+  <!-- shine -->
+  <ellipse cx="34" cy="33" rx="10" ry="6.5" fill="rgba(255,180,130,0.2)" transform="rotate(-20 34 33)"/>
+</svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     OBJECT 4 — RETRO CHROME DISC UFO (mid right)
+     Different from o1: silver metallic, orange lights, domed flat
+════════════════════════════════════════════════════════ -->
+<div class="obj o4">
+<svg viewBox="0 0 75 52" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <linearGradient id="r4" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#b0c8d8"/>
+      <stop offset="45%"  stop-color="#506878"/>
+      <stop offset="100%" stop-color="#1a2830" stop-opacity="0.5"/>
+    </linearGradient>
+    <radialGradient id="d4" cx="42%" cy="32%" r="62%">
+      <stop offset="0%"   stop-color="#d0f0ff"/>
+      <stop offset="38%"  stop-color="#5090b8"/>
+      <stop offset="75%"  stop-color="#1c3c58"/>
+      <stop offset="100%" stop-color="#081420" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="g4" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- flat metallic ring -->
+  <ellipse cx="37" cy="33" rx="35" ry="8" fill="url(#r4)"/>
+  <ellipse cx="37" cy="31" rx="35" ry="8" fill="none" stroke="#c0d8e8" stroke-width="1" opacity="0.65"/>
+  <ellipse cx="37" cy="34" rx="28" ry="6" fill="none" stroke="#607888" stroke-width="0.7" opacity="0.4"/>
+  <!-- flat dome — very shallow -->
+  <ellipse cx="37" cy="26" rx="20" ry="12" fill="url(#d4)"/>
+  <!-- dome rim stripe -->
+  <ellipse cx="37" cy="26" rx="20" ry="12" fill="none" stroke="#80b0c8" stroke-width="0.8" opacity="0.5"/>
+  <!-- dome shine -->
+  <ellipse cx="30" cy="20" rx="6" ry="3.5" fill="rgba(220,248,255,0.28)" transform="rotate(-14 30 20)"/>
+  <!-- orange/red lights — different color from o1's cyan -->
+  <circle cx="11"  cy="33" r="2.2" fill="#ff7040" opacity="0.9" filter="url(#g4)"/>
+  <circle cx="22"  cy="38" r="1.6" fill="#ff9060" opacity="0.7"/>
+  <circle cx="37"  cy="40" r="2.4" fill="#ff7040" opacity="0.92" filter="url(#g4)"/>
+  <circle cx="52"  cy="38" r="1.6" fill="#ff9060" opacity="0.7"/>
+  <circle cx="63"  cy="33" r="2.2" fill="#ff7040" opacity="0.9" filter="url(#g4)"/>
+  <!-- bottom glow orange -->
+  <ellipse cx="37" cy="42" rx="14" ry="3.5" fill="#ff6020" opacity="0.09" filter="url(#g4)"/>
+</svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     OBJECT 5 — ICE NEPTUNE PLANET (bottom right)
+     Blue gas giant, faint partial ring, storm spot
+════════════════════════════════════════════════════════ -->
+<div class="obj o5">
+<svg viewBox="0 0 125 125" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <radialGradient id="p5" cx="33%" cy="27%" r="74%">
+      <stop offset="0%"   stop-color="#90e0ff"/>
+      <stop offset="24%"  stop-color="#2098e8"/>
+      <stop offset="54%"  stop-color="#0848b0"/>
+      <stop offset="80%"  stop-color="#022268"/>
+      <stop offset="100%" stop-color="#000e30" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="og5" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <clipPath id="cp5"><circle cx="62" cy="62" r="44"/></clipPath>
+  </defs>
+  <circle cx="62" cy="62" r="50" fill="#1060d0" opacity="0.07" filter="url(#og5)"/>
+  <!-- partial thin ring -->
+  <ellipse cx="62" cy="62" rx="56" ry="9" fill="none" stroke="#4090d0" stroke-width="2" stroke-dasharray="80 100" stroke-dashoffset="20" opacity="0.28"/>
+  <circle  cx="62" cy="62" r="44" fill="url(#p5)"/>
+  <g clip-path="url(#cp5)">
+    <ellipse cx="62" cy="53" rx="36" ry="5"   fill="#80d0ff" opacity="0.1"/>
+    <ellipse cx="62" cy="63" rx="40" ry="4.5" fill="#022268" opacity="0.22"/>
+    <ellipse cx="62" cy="72" rx="30" ry="3.5" fill="#80d0ff" opacity="0.08"/>
+    <ellipse cx="62" cy="80" rx="20" ry="2.5" fill="#0848b0" opacity="0.15"/>
+    <!-- storm oval — characteristic Neptune feature -->
+    <ellipse cx="76" cy="58" rx="9" ry="5.5" fill="#ffffff" opacity="0.09" transform="rotate(-10 76 58)"/>
+    <ellipse cx="76" cy="58" rx="5" ry="3"   fill="#ffffff" opacity="0.07" transform="rotate(-10 76 58)"/>
+  </g>
+  <!-- atmosphere rim -->
+  <circle cx="62" cy="62" r="44" fill="none" stroke="#60b0ff" stroke-width="3" opacity="0.18"/>
+  <!-- shine -->
+  <ellipse cx="45" cy="44" rx="14" ry="9" fill="rgba(200,240,255,0.18)" transform="rotate(-22 45 44)"/>
+  <ellipse cx="48" cy="41" rx="6"  ry="3.5" fill="rgba(255,255,255,0.12)" transform="rotate(-22 48 41)"/>
+</svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     OBJECT 6 — GOLD VINTAGE UFO (bottom left)
+     Warm amber/gold, porthole windows, different silhouette
+════════════════════════════════════════════════════════ -->
+<div class="obj o6">
+<svg viewBox="0 0 105 70" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <radialGradient id="d6" cx="40%" cy="30%" r="66%">
+      <stop offset="0%"   stop-color="#ffe090"/>
+      <stop offset="35%"  stop-color="#d4a020"/>
+      <stop offset="70%"  stop-color="#806000"/>
+      <stop offset="100%" stop-color="#301e00" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="r6" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#c89020"/>
+      <stop offset="50%"  stop-color="#6a4800"/>
+      <stop offset="100%" stop-color="#281800" stop-opacity="0.5"/>
+    </linearGradient>
+    <filter id="g6" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- wider flatter ring than o1 -->
+  <ellipse cx="52" cy="47" rx="50" ry="10"  fill="url(#r6)"/>
+  <ellipse cx="52" cy="45" rx="50" ry="10"  fill="none" stroke="#e0a030" stroke-width="1.5" opacity="0.72"/>
+  <ellipse cx="52" cy="48" rx="40" ry="8"   fill="none" stroke="#906010" stroke-width="1"   opacity="0.45"/>
+  <ellipse cx="52" cy="49" rx="26" ry="5.5" fill="none" stroke="#c08020" stroke-width="0.8" opacity="0.35"/>
+  <!-- taller dome — more pointed than o1 -->
+  <path d="M 26 42 Q 30 14 52 10 Q 74 14 78 42 Z" fill="url(#d6)"/>
+  <!-- dome panel lines -->
+  <path d="M 52 10 Q 52 28 52 42" stroke="#c89020" stroke-width="0.7" opacity="0.3"/>
+  <path d="M 30 30 Q 52 28 74 30" stroke="#c89020" stroke-width="0.7" opacity="0.25"/>
+  <!-- dome shine -->
+  <ellipse cx="40" cy="22" rx="8" ry="5" fill="rgba(255,240,160,0.28)" transform="rotate(-20 40 22)"/>
+  <!-- porthole windows — round, glowing warm -->
+  <circle cx="38" cy="34" r="4"   fill="#301e00" stroke="#ffd040" stroke-width="1.2" opacity="0.8"/>
+  <circle cx="38" cy="34" r="2"   fill="#ffe060" opacity="0.9" filter="url(#g6)"/>
+  <circle cx="52" cy="37" r="4.5" fill="#301e00" stroke="#ffd040" stroke-width="1.3" opacity="0.85"/>
+  <circle cx="52" cy="37" r="2.2" fill="#ffe060" opacity="0.95" filter="url(#g6)"/>
+  <circle cx="66" cy="34" r="4"   fill="#301e00" stroke="#ffd040" stroke-width="1.2" opacity="0.8"/>
+  <circle cx="66" cy="34" r="2"   fill="#ffe060" opacity="0.9" filter="url(#g6)"/>
+  <!-- ring exhaust glow spots -->
+  <circle cx="16"  cy="47" r="2.4" fill="#ffb020" opacity="0.85" filter="url(#g6)"/>
+  <circle cx="88"  cy="47" r="2.4" fill="#ffb020" opacity="0.85" filter="url(#g6)"/>
+  <circle cx="52"  cy="57" r="2.8" fill="#ffd040" opacity="0.9"  filter="url(#g6)"/>
+  <!-- antenna — forked like antique TV antenna -->
+  <line x1="52" y1="10" x2="44" y2="2"  stroke="#d4a020" stroke-width="1.2" opacity="0.65"/>
+  <line x1="52" y1="10" x2="60" y2="2"  stroke="#d4a020" stroke-width="1.2" opacity="0.65"/>
+  <circle cx="44" cy="1.5" r="1.5" fill="#ffcc40" opacity="0.8" filter="url(#g6)"/>
+  <circle cx="60" cy="1.5" r="1.5" fill="#ffcc40" opacity="0.8" filter="url(#g6)"/>
+</svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     OBJECT 7 — GREEN COMET with glowing tail (upper mid)
+════════════════════════════════════════════════════════ -->
+<div class="obj o7">
+<svg viewBox="0 0 58 28" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <linearGradient id="tail7" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%"   stop-color="#30c060" stop-opacity="0"/>
+      <stop offset="60%"  stop-color="#30c060" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#80ff90" stop-opacity="0.6"/>
+    </linearGradient>
+    <radialGradient id="core7" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#c0ffcc"/>
+      <stop offset="40%"  stop-color="#40d860"/>
+      <stop offset="80%"  stop-color="#108030"/>
+      <stop offset="100%" stop-color="#042010" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="g7" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- layered tail — wider then narrower -->
+  <path d="M 2 14 Q 20 7  44 14 Q 20 21 2 14"  fill="url(#tail7)" opacity="0.22"/>
+  <path d="M 6 14 Q 22 9  44 14 Q 22 19 6 14"  fill="url(#tail7)" opacity="0.3"/>
+  <path d="M 12 14 Q 26 11 44 14 Q 26 17 12 14" fill="url(#tail7)" opacity="0.35"/>
+  <!-- core -->
+  <circle cx="46" cy="14" r="10" fill="#40c858" opacity="0.15" filter="url(#g7)"/>
+  <circle cx="46" cy="14" r="8"  fill="url(#core7)" filter="url(#g7)"/>
+  <circle cx="46" cy="14" r="5"  fill="#60ee78" opacity="0.85"/>
+  <ellipse cx="43" cy="11" rx="3.5" ry="2" fill="rgba(210,255,220,0.35)" transform="rotate(-18 43 11)"/>
+</svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     STAR FLARES — 4 unique sizes/colors, pure SVG transparent
+════════════════════════════════════════════════════════ -->
+
+<!-- Star 1: large cool white-blue -->
+<div class="obj o8">
+<svg viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <filter id="sf1" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <line x1="27" y1="1"  x2="27" y2="53" stroke="rgba(140,200,255,0.3)" stroke-width="1.4"/>
+  <line x1="1"  y1="27" x2="53" y2="27" stroke="rgba(140,200,255,0.3)" stroke-width="1.4"/>
+  <line x1="7"  y1="7"  x2="47" y2="47" stroke="rgba(140,200,255,0.18)" stroke-width="0.9"/>
+  <line x1="47" y1="7"  x2="7"  y2="47" stroke="rgba(140,200,255,0.18)" stroke-width="0.9"/>
+  <path d="M27 3 L29.2 22 L48 27 L29.2 32 L27 51 L24.8 32 L6 27 L24.8 22 Z" fill="white" opacity="0.92" filter="url(#sf1)"/>
+  <circle cx="27" cy="27" r="4.5" fill="white"/>
+  <circle cx="27" cy="27" r="10"  fill="rgba(180,220,255,0.2)"/>
+</svg>
+</div>
+
+<!-- Star 2: medium cyan -->
+<div class="obj o9">
+<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <filter id="sf2" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <line x1="18" y1="1"  x2="18" y2="35" stroke="rgba(0,212,200,0.3)" stroke-width="1"/>
+  <line x1="1"  y1="18" x2="35" y2="18" stroke="rgba(0,212,200,0.3)" stroke-width="1"/>
+  <line x1="5"  y1="5"  x2="31" y2="31" stroke="rgba(0,212,200,0.18)" stroke-width="0.7"/>
+  <line x1="31" y1="5"  x2="5"  y2="31" stroke="rgba(0,212,200,0.18)" stroke-width="0.7"/>
+  <path d="M18 3 L19.7 14.5 L30 18 L19.7 21.5 L18 33 L16.3 21.5 L6 18 L16.3 14.5 Z" fill="#00e8dc" opacity="0.92" filter="url(#sf2)"/>
+  <circle cx="18" cy="18" r="3.5" fill="white"/>
+  <circle cx="18" cy="18" r="7"   fill="rgba(0,220,210,0.2)"/>
+</svg>
+</div>
+
+<!-- Star 3: small gold -->
+<div class="obj o10">
+<svg viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <defs>
+    <filter id="sf3" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <line x1="13" y1="1"  x2="13" y2="25" stroke="rgba(255,200,80,0.3)" stroke-width="0.8"/>
+  <line x1="1"  y1="13" x2="25" y2="13" stroke="rgba(255,200,80,0.3)" stroke-width="0.8"/>
+  <path d="M13 2 L14.4 9.5 L22 13 L14.4 16.5 L13 24 L11.6 16.5 L4 13 L11.6 9.5 Z" fill="#ffd060" opacity="0.94" filter="url(#sf3)"/>
+  <circle cx="13" cy="13" r="2.8" fill="white"/>
+  <circle cx="13" cy="13" r="5.5" fill="rgba(255,210,80,0.2)"/>
+</svg>
+</div>
+
+<!-- Star 4: tiny purple -->
+<div class="obj o11">
+<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <line x1="10" y1="1"  x2="10" y2="19" stroke="rgba(180,120,255,0.3)" stroke-width="0.7"/>
+  <line x1="1"  y1="10" x2="19" y2="10" stroke="rgba(180,120,255,0.3)" stroke-width="0.7"/>
+  <path d="M10 2 L11.2 7.5 L17 10 L11.2 12.5 L10 18 L8.8 12.5 L3 10 L8.8 7.5 Z" fill="#c090ff" opacity="0.9"/>
+  <circle cx="10" cy="10" r="2.2" fill="white"/>
+</svg>
+</div>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#">About</a>
+  <a href="#">Explore</a>
+</nav>
+
+<div class="shell">
+  <main>
+    <div class="logo">
+      <span class="logo-search">Search</span><span class="logo-hub">HUB</span>
+    </div>
+    <div class="search-wrap">
+      <div class="search-bar">
+        <div class="search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <input type="text" placeholder="Search the cosmos..." autocomplete="off"/>
+        <button class="mic-btn" tabindex="-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </button>
+        <button class="ai-btn" tabindex="-1">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+            <path d="M7 0.5L8.3 5.7L13.5 7L8.3 8.3L7 13.5L5.7 8.3L0.5 7L5.7 5.7Z" fill="var(--cyan)"/>
+          </svg>
+          AI Mode
         </button>
       </div>
     </div>
-    <div class="category-chips">
-      <button class="chip" data-query="Technology">Technology</button>
-      <button class="chip" data-query="Science">Science</button>
-      <button class="chip" data-query="Space">Space</button>
-      <button class="chip" data-query="Artificial Intelligence">AI</button>
-      <button class="chip" data-query="History">History</button>
+    <div class="action-btns">
+      <button class="action-btn">SearchHUB</button>
+      <button class="action-btn">I'm Feeling Cosmic</button>
+    </div>
+  </main>
+  <div class="bottom-strip">
+    <div class="explore-label">Explore the Universe</div>
+    <div class="footer-links">
+      <div class="footer-left">
+        <a href="#">About</a>
+        <a href="#">How SearchHUB Works</a>
+      </div>
+      <div class="footer-right">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Settings</a>
+      </div>
     </div>
   </div>
 </div>
-<div class="page" id="resultsPage">
-  <div class="results-header">
-    <button class="back-btn" id="backBtn">← Back</button>
-    <div class="results-title-block"><h2 id="resultsHeading">Results</h2><p id="resultsMeta"></p></div>
-    <div class="results-search-bar">
-      <input type="text" id="resultsInput" placeholder="Search..." autocomplete="off"/>
-      <button class="mic-btn" id="resultsMic" title="Voice search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-      </button>
-    </div>
-  </div>
-  <div class="source-tabs">
-    <button class="source-tab active" data-source="all">🔍 All</button>
-    <button class="source-tab" data-source="wiki">📖 Wikipedia</button>
-    <button class="source-tab" data-source="github">🐙 GitHub</button>
-    <button class="source-tab" data-source="stackoverflow">💬 Stack Overflow</button>
-    <button class="source-tab" data-source="hackernews">🔶 Hacker News</button>
-    <button class="source-tab" data-source="reddit">🟠 Reddit</button>
-    <button class="source-tab" data-source="books">📚 Books</button>
-  </div>
-  <div class="results-body">
-    <div id="loadingState"></div>
-    <div class="no-results" id="noResults"><h3>No results found</h3><p>Try a different keyword.</p></div>
-    <div id="instantBox"></div>
-    <div id="resultsList"></div>
-    <div id="searchOnRow"></div>
-    <div class="pagination" id="pagination"></div>
-  </div>
-</div>
+
 <script>
-(function(){const canvas=document.getElementById('starCanvas'),ctx=canvas.getContext('2d');let stars=[];function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}function init(){stars=Array.from({length:260},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,baseR:Math.random()*1.4+0.3,phase:Math.random()*Math.PI*2,speed:Math.random()*0.018+0.005,flare:Math.random()<0.12,fp:Math.random()*Math.PI*2,fs:Math.random()*0.03+0.01,color:Math.random()<.15?'rgba(180,220,255,':Math.random()<.10?'rgba(255,220,180,':'rgba(210,205,255,'}));}function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);stars.forEach(s=>{s.phase+=s.speed;s.fp+=s.fs;const tw=Math.sin(s.phase),alpha=tw*0.38+0.58;let r=s.baseR+tw*0.35;if(s.flare){const fv=Math.sin(s.fp);if(fv>0.88){r+=fv*1.3;const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,r*5);g.addColorStop(0,s.color+'0.5)');g.addColorStop(1,s.color+'0)');ctx.beginPath();ctx.arc(s.x,s.y,r*5,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();}}ctx.beginPath();ctx.arc(s.x,s.y,Math.max(0.1,r),0,Math.PI*2);ctx.fillStyle=s.color+Math.min(1,alpha)+')';ctx.fill();});requestAnimationFrame(draw);}resize();init();draw();window.addEventListener('resize',()=>{resize();init();});})();
-function showToast(msg,ms=2800){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),ms);}
-function setupVoice(btn,inp,cb){if(!('SpeechRecognition'in window||'webkitSpeechRecognition'in window)){btn.style.opacity='0.4';btn.style.pointerEvents='none';return;}const rec=new(window.SpeechRecognition||window.webkitSpeechRecognition)();rec.continuous=false;rec.interimResults=true;rec.lang='en-US';rec.onresult=e=>{const t=Array.from(e.results).map(r=>r[0].transcript).join('');inp.value=t;if(e.results[0].isFinal){rec.stop();cb(t);}};rec.onend=()=>btn.classList.remove('listening');rec.onerror=()=>{btn.classList.remove('listening');showToast('Voice error');};btn.addEventListener('click',()=>{btn.classList.contains('listening')?rec.stop():(rec.start(),btn.classList.add('listening'),showToast('Listening...'));});}
-const homePage=document.getElementById('homePage'),resultsPage=document.getElementById('resultsPage');
-function showHome(){homePage.style.display='flex';resultsPage.style.display='none';document.getElementById('homeInput').focus();window.history.pushState({},'','/');}
-function showResultsPage(){homePage.style.display='none';resultsPage.style.display='block';}
-document.getElementById('backBtn').addEventListener('click',showHome);
-const homeInput=document.getElementById('homeInput');
-homeInput.addEventListener('keydown',e=>{if(e.key==='Enter'){const q=homeInput.value.trim();if(q)performSearch(q);}});
-document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{homeInput.value=c.dataset.query;performSearch(c.dataset.query);}));
-setupVoice(document.getElementById('homeMic'),homeInput,q=>{if(q)performSearch(q);});
-const resultsInput=document.getElementById('resultsInput');
-resultsInput.addEventListener('keydown',e=>{if(e.key==='Enter'){const q=resultsInput.value.trim();if(q)performSearch(q);}});
-setupVoice(document.getElementById('resultsMic'),resultsInput,q=>{if(q)performSearch(q);});
-let activeSource='all';
-document.querySelectorAll('.source-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.source-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');activeSource=tab.dataset.source;const q=resultsInput.value.trim()||homeInput.value.trim();if(q)performSearch(q);});});
-const BADGE_LABELS={wiki:'Wikipedia',ddg:'DuckDuckGo',github:'GitHub',stackoverflow:'Stack Overflow',hackernews:'Hacker News',reddit:'Reddit',books:'Open Library',news:'News'};
-async function performSearch(query){
-  if(!query.trim())return;
-  showResultsPage();
-  resultsInput.value=query;
-  document.getElementById('resultsHeading').textContent='Results for "'+query+'"';
-  document.getElementById('resultsMeta').textContent='';
-  document.getElementById('resultsList').innerHTML='';
-  document.getElementById('instantBox').innerHTML='';
-  document.getElementById('searchOnRow').innerHTML='';
-  document.getElementById('pagination').innerHTML='';
-  document.getElementById('noResults').style.display='none';
-  const shimDiv=document.getElementById('loadingState');
-  shimDiv.innerHTML='<div class="loading-label">Searching Wikipedia, GitHub, Stack Overflow, Reddit and more...</div>'+[1,2,3,4,5].map(()=>'<div class="shimmer"></div>').join('');
-  const t0=performance.now();
-  try{
-    const res=await fetch('/api/search?q='+encodeURIComponent(query));
-    const elapsed=((performance.now()-t0)/1000).toFixed(2);
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    const data=await res.json();
-    shimDiv.innerHTML='';
-    let results=data.results||[];
-    if(activeSource!=='all')results=results.filter(r=>r.badge===activeSource);
-    const total=results.length;
-    document.getElementById('resultsMeta').textContent='Found '+total.toLocaleString()+' result'+(total!==1?'s':'')+' across 8 sources in '+elapsed+'s';
-    window.history.replaceState({},'','?q='+encodeURIComponent(query));
-    if(!total){document.getElementById('noResults').style.display='block';renderSearchOnRow(query);return;}
-    const instant=results.find(r=>r.badge==='ddg'&&r.snippet&&r.snippet.length>80);
-    if(instant){document.getElementById('instantBox').innerHTML='<div class="instant-box"><div class="instant-label">INSTANT ANSWER</div><h3>'+esc(instant.title)+'</h3><p>'+esc(instant.snippet)+'</p><a class="instant-source" href="'+esc(instant.url)+'" target="_blank" rel="noopener">Source: '+esc(instant.source)+' ↗</a></div>';}
-    const list=document.getElementById('resultsList');
-    const PAGE_SIZE=12;let page=1;const totalPages=Math.ceil(total/PAGE_SIZE);
-    function renderPage(p){
-      list.innerHTML='';
-      results.slice((p-1)*PAGE_SIZE,p*PAGE_SIZE).forEach((r,i)=>{
-        const card=document.createElement('div');card.className='result-card';card.style.animationDelay=(i*0.04)+'s';
-        const favicon='https://www.google.com/s2/favicons?domain='+esc(getDomain(r.url))+'&sz=32';
-        const badgeLabel=BADGE_LABELS[r.badge]||r.source||r.badge;
-        card.innerHTML='<div class="result-meta-row"><img class="result-favicon" src="'+favicon+'" alt="" onerror="this.style.display=\'none\'"><span class="result-domain">'+esc(getDomain(r.url))+'</span><span class="badge badge-'+esc(r.badge)+'">'+esc(badgeLabel)+'</span></div><a href="'+esc(r.url)+'" target="_blank" rel="noopener">'+esc(r.title)+'</a><div class="result-url">'+esc(r.url)+'</div><p class="result-snippet">'+highlight(esc(r.snippet||''),query)+'</p>';
-        card.addEventListener('click',e=>{if(!e.target.closest('a'))card.querySelector('a')?.click();});
-        list.appendChild(card);
-      });
-      const pg=document.getElementById('pagination');pg.innerHTML='';
-      if(totalPages>1){for(let i=1;i<=Math.min(totalPages,8);i++){const btn=document.createElement('button');btn.className='page-btn'+(i===p?' active':'');btn.textContent=i;btn.addEventListener('click',()=>{page=i;renderPage(i);window.scrollTo({top:0,behavior:'smooth'});});pg.appendChild(btn);}}
-    }
-    renderPage(1);renderSearchOnRow(query);
-  }catch(err){
-    document.getElementById('loadingState').innerHTML='';
-    document.getElementById('noResults').style.display='block';
-    renderSearchOnRow(query);
-    showToast('Server error - make sure Spring Boot is running',4000);
-    console.error(err);
+(function(){
+  const canvas=document.getElementById('stars'),ctx=canvas.getContext('2d');
+  let stars=[];
+  function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
+  function init(){
+    stars=Array.from({length:260},()=>({
+      x:Math.random()*canvas.width, y:Math.random()*canvas.height,
+      r:Math.random()*1.4+0.15,
+      phase:Math.random()*Math.PI*2, speed:Math.random()*0.011+0.003,
+      flare:Math.random()<0.1, fp:Math.random()*Math.PI*2, fs:Math.random()*0.022+0.007,
+      color:Math.random()<0.08?'rgba(0,210,200,':
+            Math.random()<0.06?'rgba(180,120,255,':
+            Math.random()<0.04?'rgba(255,200,100,':
+            'rgba(200,210,235,'
+    }));
   }
-}
-function renderSearchOnRow(query){const q=encodeURIComponent(query);document.getElementById('searchOnRow').innerHTML='<div class="search-on-row"><span class="search-on-label">Also search on:</span><a class="ext-btn ext-google" href="https://www.google.com/search?q='+q+'" target="_blank" rel="noopener">🔍 Google</a><a class="ext-btn ext-bing" href="https://www.bing.com/search?q='+q+'" target="_blank" rel="noopener">🔷 Bing</a><a class="ext-btn ext-ddg" href="https://duckduckgo.com/?q='+q+'" target="_blank" rel="noopener">🦆 DuckDuckGo</a></div>';}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function highlight(html,query){if(!query)return html;const words=query.trim().split(/\s+/).filter(w=>w.length>2).map(w=>w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));if(!words.length)return html;return html.replace(new RegExp('('+words.join('|')+')','gi'),'<mark>$1</mark>');}
-function getDomain(url){try{return new URL(url).hostname.replace('www.','');}catch{return url||'web';}}
-(function(){const p=new URLSearchParams(window.location.search);const q=p.get('q');if(q){homeInput.value=q;performSearch(q);}})();
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    stars.forEach(s=>{
+      s.phase+=s.speed; s.fp+=s.fs;
+      const a=Math.sin(s.phase)*0.42+0.54;
+      let r=s.r;
+      if(s.flare){
+        const fv=Math.sin(s.fp);
+        if(fv>0.85){
+          r+=fv*1.5;
+          const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,r*6);
+          g.addColorStop(0,s.color+'0.45)'); g.addColorStop(1,s.color+'0)');
+          ctx.beginPath();ctx.arc(s.x,s.y,r*6,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+        }
+      }
+      ctx.beginPath();ctx.arc(s.x,s.y,Math.max(0.1,r),0,Math.PI*2);
+      ctx.fillStyle=s.color+Math.min(1,a)+')';ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  resize();init();draw();
+  window.addEventListener('resize',()=>{resize();init();});
+})();
 </script>
 </body>
 </html>
